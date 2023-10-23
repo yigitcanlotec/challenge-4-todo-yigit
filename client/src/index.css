@@ -36,6 +36,14 @@ h1 {
   line-height: 1.1;
 }
 
+.lift-effect {
+  transition: transform 2s ease;
+  transform: translateY(-50px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+}
+
+
+
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -45,8 +53,22 @@ button {
   font-family: inherit;
   background-color: #1a1a1a;
   cursor: pointer;
-  transition: border-color 0.25s;
+  /* display: none; */
+  /* transition: display 2s ease; */
 }
+
+.hidden {
+  display: none;
+  transition: display 2s ease;
+}
+
+
+.visible {
+  display: inline;
+}
+
+
+
 button:hover {
   border-color: #646cff;
 }

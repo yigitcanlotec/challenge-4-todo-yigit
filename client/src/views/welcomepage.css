@@ -34,12 +34,12 @@ button {
   /* transition: display 2s ease; */
 }
 
-.myButton {
+button[class*='-button'] {
   opacity: 0;
   transition: opacity 3s ease;
 }
 
-.myButton.visible {
+button[class*='-button'].visible {
   opacity: 1;
 }
 
@@ -49,4 +49,9 @@ button:hover {
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+.main-container > div {
+  display: flex;
+  gap: 10px;
 }

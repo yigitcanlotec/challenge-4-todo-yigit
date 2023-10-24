@@ -1,24 +1,14 @@
-import { useEffect, useState } from 'react'
-import './App.css'
+import WelcomePage from './views/WelcomePage.jsx';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 function App() {
-  const [isVisible, setIsVisible] = useState(true);
-
-  setTimeout(() => {
-    document.querySelector("#root > div > h1").classList.add("lift-effect");
-    setIsVisible(false);
-  }, 2000);
-
- 
-
- 
-
   return (
-    <div className='main-container'>
-      <h1>TodoApp</h1>
-      <button className={isVisible ? 'hidden' : 'visible'}>Log In</button>
-    </div>
-  )
+    <Router>
+      <Routes>
+        <Route path='/' element={<WelcomePage />} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;

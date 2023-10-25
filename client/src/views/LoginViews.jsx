@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import './loginpage.css';
+import './loginViews.css';
 
 function LoginPage() {
   const [username, setUsername] = useState('');
@@ -14,7 +14,9 @@ function LoginPage() {
   return (
     <div className='login-container'>
       <div className='login-container-left'>
-        <div className='container-1'>left</div>
+        <div className='container-1'>
+          <div className='container-1-left'>left</div>
+        </div>
       </div>
       <div className='login-container-right'>
         <div className='container-2'>

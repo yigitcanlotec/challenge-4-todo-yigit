@@ -1,13 +1,15 @@
-import LoginPage from './views/LoginPage';
-import WelcomePage from './views/WelcomePage.jsx';
+import LoginViews from './views/LoginViews';
+import WelcomeViews from './views/WelcomeViews';
+import RegisterViews from './views/RegisterViews';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path='/' element={<WelcomePage />} />
-        <Route path='/login' element={<LoginPage />} />
+        <Route path='/' element={<WelcomeViews />} />
+        <Route path='/login' element={<LoginViews />} />
+        <Route path='/register' element={<RegisterViews />} />
       </Routes>
     </Router>
   );

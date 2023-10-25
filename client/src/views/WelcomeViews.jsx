@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import './welcomepage.css';
+import './welcomeViews.css';
 import { useNavigate } from 'react-router-dom';
 
 function WelcomePage() {

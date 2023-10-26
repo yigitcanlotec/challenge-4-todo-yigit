@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import './loginViews.css';
+import axios from 'axios';
 
 function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [token, setToken] = useState('');
 
   const inputUsername = (event) => {
     setUsername(event.target.value);
@@ -11,6 +13,26 @@ function LoginPage() {
   const inputPassword = (event) => {
     setPassword(event.target.value);
   };
+
+  const sendLoginRequest = () => {
+    // Base64 encode the username and password
+    const base64Credentials = btoa(username + ':' + password);
+
+    axios
+      .get('http://localhost:3000/login', {
+        headers: {
+          Authorization: `Basic ${base64Credentials}`,
+        },
+      })
+      .then((response) => {
+        setToken(response.data);
+        console.log('Token:', response.data);
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+  };
+
   return (
     <div className='login-container'>
       <div className='login-container-left'>
@@ -37,7 +59,12 @@ function LoginPage() {
               onChange={inputPassword}
             />
             <div className='button-container'>
-              <input type='button' id='login-button' value='Log In' />
+              <input
+                type='button'
+                id='login-button'
+                value='Log In'
+                onClick={sendLoginRequest}
+              />
             </div>
           </div>
         </div>

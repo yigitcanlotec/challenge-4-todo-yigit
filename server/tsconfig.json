@@ -6,6 +6,6 @@
     "strict": true,
     "esModuleInterop": true
   },
-  "include": ["*.tsx"],
+  "include": ["*.ts"],
   "exclude": ["node_modules"]
 }

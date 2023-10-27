@@ -33,6 +33,7 @@ function LoginPage() {
         if (response.status === 200) {
           setToken(response.data);
           localStorage.setItem('token', response.data);
+          localStorage.setItem('user', username);
           setMessageBox('Başarılı!');
           setTimeout(() => {
             setMessageBox('');

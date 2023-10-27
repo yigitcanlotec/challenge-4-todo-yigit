@@ -199,6 +199,66 @@ app.post("/api/v1/register", async (req, res) => {
   }
 });
 
+app.get("/api/v1/:user/tasks", isAuthenticated, async (req, res) => {
+  const command = new QueryCommand({
+    TableName: process.env.TODO_TABLE_NAME,
+    IndexName: "username-index",
+    KeyConditionExpression: "username = :username",
+    ExpressionAttributeValues: {
+      ":username": { S: req.params.user },
+    },
+  });
+
+  let results: QueryCommandOutput;
+  try {
+    results = await dbClient.send(command);
+    if (results.Items) {
+      const parsedItems = results.Items.map((item) => {
+        return {
+          todo_id: item.todo_id.S,
+          title: item.title.S,
+          isDone: item.isDone.BOOL,
+        };
+      });
+      return res.status(200).send(parsedItems);
+    }
+    return res.sendStatus(204);
+  } catch (err) {
+    // If error occurs in the query, send the 500 error.
+    logger(req, res, function (error) {
+      if (error) return error.message;
+    });
+    return res.sendStatus(500);
+  }
+});
+
+app.put("/api/v1/:user/task", isAuthenticated, async (req, res) => {
+  const item = {
+    todo_id: { S: ulid() },
+    username: { S: req.params.user },
+    title: { S: req.body.title },
+    isDone: { BOOL: req.body.isdone },
+  };
+
+  const command = new PutItemCommand({
+    TableName: process.env.TODO_TABLE_NAME,
+    Item: item as Record<string, AttributeValue>,
+  });
+
+  const result = await dbClient.send(command);
+
+  if (result.$metadata.httpStatusCode === 200) {
+    //If successful;
+    return res.sendStatus(201);
+  } else if (result.$metadata.httpStatusCode === 204) {
+    //If something happens and tasks not added;
+    return res.sendStatus(400);
+  } else {
+    //Then it must be server issue.;
+    return res.sendStatus(500);
+  }
+});
+
 //-------------------------------------
 // For invalid path, return response 418.
 app.use((req, res) => {

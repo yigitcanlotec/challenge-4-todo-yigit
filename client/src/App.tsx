@@ -3,6 +3,7 @@ import WelcomeViews from './views/WelcomeViews';
 import RegisterViews from './views/RegisterViews';
 import HomeViews from './views/HomeViews';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import React from 'react';
 
 function App() {
   return (

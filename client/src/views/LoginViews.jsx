@@ -19,7 +19,7 @@ function LoginPage() {
     const base64Credentials = btoa(username + ':' + password);
 
     axios
-      .get('http://localhost:3000/login', {
+      .get('http://localhost:3000/api/v1/login', {
         headers: {
           Authorization: `Basic ${base64Credentials}`,
         },

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import './welcomeViews.css';
 import { useNavigate } from 'react-router-dom';
+import React from 'react';
 
 function WelcomePage() {
   const [isVisible, setIsVisible] = useState(false);
@@ -15,7 +16,7 @@ function WelcomePage() {
   };
 
   setTimeout(() => {
-    document.querySelector('#todo-header').classList.add('lift-effect');
+    document.querySelector('#todo-header')?.classList.add('lift-effect');
     setIsVisible(true);
   }, 2000);
 

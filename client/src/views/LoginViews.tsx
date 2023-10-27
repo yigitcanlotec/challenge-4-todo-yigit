@@ -9,7 +9,7 @@ function LoginPage() {
   const [password, setPassword] = useState('');
   const [token, setToken] = useState('');
   const [messageBox, setMessageBox] = useState('');
-  const errorTimeoutRef = useRef(null);
+  const errorTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const navigate = useNavigate();
 
   const inputUsername = (event) => {

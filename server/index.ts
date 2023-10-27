@@ -74,7 +74,7 @@ async function isAuthenticated(
 }
 
 //------------------API ROUTE--------------------------
-app.get("api/v1/login", async (req, res) => {
+app.get("/api/v1/login", async (req, res) => {
   // Receive auth info.
   const userInfo = getUserInfo(
     parseBasicAuthHeader(req.headers.authorization || "")

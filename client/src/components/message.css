@@ -1,0 +1,10 @@
+.message-container {
+  /* position: absolute;
+  left: 45%;
+  top: 50%;
+  height: 350px;
+  width: 350px;
+  background-color: red; */
+  text-align: center;
+  border: 1px solid;
+}

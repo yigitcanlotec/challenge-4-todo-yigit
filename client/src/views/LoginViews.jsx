@@ -1,11 +1,16 @@
-import { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './loginViews.css';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import Message from '../components/message';
 
 function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [token, setToken] = useState('');
+  const [messageBox, setMessageBox] = useState('');
+  const errorTimeoutRef = useRef(null);
+  const navigate = useNavigate();
 
   const inputUsername = (event) => {
     setUsername(event.target.value);
@@ -25,11 +30,37 @@ function LoginPage() {
         },
       })
       .then((response) => {
-        setToken(response.data);
-        console.log('Token:', response.data);
+        if (response.status === 200) {
+          setToken(response.data);
+          localStorage.setItem('token', response.data);
+          setMessageBox('Başarılı!');
+          setTimeout(() => {
+            setMessageBox('');
+            navigate('/home');
+          }, 2000);
+        } else {
+          {
+            setMessageBox(response.data);
+            errorTimeoutRef.current = setTimeout(() => {
+              setMessageBox('');
+            }, 2000);
+          }
+        }
       })
       .catch((err) => {
         console.log(err.message);
+        setMessageBox(err.message);
+        if (err.message.includes('500')) {
+          setMessageBox('Server hatası!');
+          console.log(messageBox);
+        } else {
+          setMessageBox('Kullanıcı adı veya şifre yanlış!');
+          console.log(messageBox);
+        }
+
+        errorTimeoutRef.current = setTimeout(() => {
+          setMessageBox('');
+        }, 2000);
       });
   };
 
@@ -55,7 +86,6 @@ function LoginPage() {
             <input
               type='password'
               id='password-input'
-              value={password}
               onChange={inputPassword}
             />
             <div className='button-container'>
@@ -66,6 +96,7 @@ function LoginPage() {
                 onClick={sendLoginRequest}
               />
             </div>
+            {messageBox && <Message errorMessage={messageBox} />}
           </div>
         </div>
       </div>

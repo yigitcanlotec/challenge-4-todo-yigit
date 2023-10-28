@@ -14,11 +14,13 @@ import {
   QueryCommand,
   QueryCommandOutput,
   GetItemCommand,
+  DeleteItemCommand,
   AttributeValue,
   PutItemCommand,
   UpdateItemCommand,
   UpdateItemCommandOutput,
   ReturnValue,
+  DeleteItemInput,
 } from "@aws-sdk/client-dynamodb";
 import morgan from "morgan";
 import { marshall } from "@aws-sdk/util-dynamodb";
@@ -288,6 +290,36 @@ app.put("/api/v1/:user/task", isAuthenticated, async (req, res) => {
     return res.sendStatus(400);
   } else {
     //Then it must be server issue.;
+    return res.sendStatus(500);
+  }
+});
+
+app.delete("/api/v1/:user/task", isAuthenticated, async (req, res) => {
+  const purifiedUsername = DOMPurify.sanitize(req.params.user);
+  if (!req.body.todo_id || typeof req.body.todo_id !== "string")
+    return res.sendStatus(400);
+
+  const command = new DeleteItemCommand({
+    TableName: process.env.TODO_TABLE_NAME,
+    Key: {
+      username: { S: purifiedUsername },
+      todo_id: { S: req.body.todo_id },
+    },
+  });
+
+  try {
+    const result = await dbClient.send(command);
+    if (result.$metadata.httpStatusCode === 200) {
+      //If successful;
+      return res.sendStatus(200);
+    } else if (result.$metadata.httpStatusCode === 204) {
+      //If something happens and tasks not deleted;
+      return res.sendStatus(400);
+    } else {
+      //Then it must be server issue.;
+      return res.sendStatus(500);
+    }
+  } catch (error) {
     return res.sendStatus(500);
   }
 });

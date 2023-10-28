@@ -37,7 +37,11 @@ export default function Home() {
       <div className='task-container'>
         <div className='tasks'>
           {taskData.map((task) => (
-            <div key={task.todo_id}>{task.title}</div>
+            <Task
+              taskId={task.todo_id}
+              titleText={task.title}
+              isDone={task.isDone}
+            />
           ))}
         </div>
       </div>

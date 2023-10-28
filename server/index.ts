@@ -23,13 +23,39 @@ import {
 import morgan from "morgan";
 import { marshall } from "@aws-sdk/util-dynamodb";
 import { ulid } from "ulid";
+import createDOMPurify from "dompurify";
+import { JSDOM } from "jsdom";
 //----------------------------------
 // Configurations.
 dotenv.config();
 const app = express();
 app.use(cors());
 app.use(morgan("dev"));
+const window = new JSDOM("").window;
+const DOMPurify = createDOMPurify(window);
+
+interface ExpressJSError extends SyntaxError {
+  status?: number;
+  body?: any;
+}
+
 app.use(express.json());
+
+// Invalid JSON causes Unexpected token error so prevent similar situations like this:
+app.use(
+  (
+    err: ExpressJSError,
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
+      return res.status(400).send({ error: "Invalid JSON" }); // Bad request
+    }
+    next();
+  }
+);
+
 // Globals.
 const logger = morgan("combined");
 const dbClient = new DynamoDBClient({
@@ -233,10 +259,17 @@ app.get("/api/v1/:user/tasks", isAuthenticated, async (req, res) => {
 });
 
 app.put("/api/v1/:user/task", isAuthenticated, async (req, res) => {
+  // Sanitized from XSS.
+  const purifiedUsername = DOMPurify.sanitize(req.params.user);
+  const purifiedTitle = DOMPurify.sanitize(req.body.title);
+
+  if (typeof req.body.isdone !== "boolean")
+    return res.status(400).send("isDone must be boolean.");
+
   const item = {
     todo_id: { S: ulid() },
-    username: { S: req.params.user },
-    title: { S: req.body.title },
+    username: { S: purifiedUsername },
+    title: { S: purifiedTitle },
     isDone: { BOOL: req.body.isdone },
   };
 

@@ -50,6 +50,10 @@
   height: 75px;
 }
 
+.tasks div[class='true'] p {
+  text-decoration: line-through;
+}
+
 .tasks div:hover {
   cursor: pointer;
 }

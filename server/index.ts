@@ -18,6 +18,7 @@ import {
   AttributeValue,
   PutItemCommand,
   UpdateItemCommand,
+  UpdateItemInput,
   UpdateItemCommandOutput,
   ReturnValue,
   DeleteItemInput,
@@ -318,6 +319,60 @@ app.delete("/api/v1/:user/task", isAuthenticated, async (req, res) => {
     } else {
       //Then it must be server issue.;
       return res.sendStatus(500);
+    }
+  } catch (error) {
+    return res.sendStatus(500);
+  }
+});
+
+app.post("/api/v1/:user/:task/done", isAuthenticated, async (req, res) => {
+  const params = {
+    TableName: process.env.TODO_TABLE_NAME!,
+    Key: {
+      username: { S: req.params.user },
+      todo_id: { S: req.params.task },
+    },
+    UpdateExpression: "set isDone = :newValue",
+    ExpressionAttributeValues: {
+      ":newValue": { BOOL: true },
+    },
+  };
+
+  const command = new UpdateItemCommand(params);
+
+  try {
+    const result = await dbClient.send(command);
+    if (result.$metadata.httpStatusCode === 200) {
+      return res.sendStatus(200);
+    } else {
+      return res.sendStatus(400);
+    }
+  } catch (error) {
+    return res.sendStatus(500);
+  }
+});
+
+app.post("/api/v1/:user/:task/undone", isAuthenticated, async (req, res) => {
+  const params = {
+    TableName: process.env.TODO_TABLE_NAME!,
+    Key: {
+      username: { S: req.params.user },
+      todo_id: { S: req.params.task },
+    },
+    UpdateExpression: "set isDone = :newValue",
+    ExpressionAttributeValues: {
+      ":newValue": { BOOL: false },
+    },
+  };
+
+  const command = new UpdateItemCommand(params);
+
+  try {
+    const result = await dbClient.send(command);
+    if (result.$metadata.httpStatusCode === 200) {
+      return res.sendStatus(200);
+    } else {
+      return res.sendStatus(400);
     }
   } catch (error) {
     return res.sendStatus(500);

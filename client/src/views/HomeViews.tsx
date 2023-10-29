@@ -27,6 +27,37 @@ export default function Home() {
     setDone(event.target.checked);
   };
 
+  const markAsDoneOrUndone = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+    username,
+    isDone,
+    token
+  ) => {
+    let result;
+    if (isDone) {
+      result = await axios.post(
+        serverURL + `/api/v1/${username}/${event.currentTarget.id}/undone`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    } else {
+      result = await axios.post(
+        serverURL + `/api/v1/${username}/${event.currentTarget.id}/done`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    }
+    getTasks();
+  };
+
   async function handleAddTask(param: {
     title: string;
     isDone: boolean;
@@ -89,6 +120,9 @@ export default function Home() {
                   taskId={task.todo_id}
                   titleText={task.title}
                   isDone={task.isDone}
+                  handleClick={(e) =>
+                    markAsDoneOrUndone(e, username, task.isDone, token)
+                  }
                 />
               ))}
           </div>

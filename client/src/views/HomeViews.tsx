@@ -62,7 +62,6 @@ export default function Home() {
     title: string;
     isDone: boolean;
   }): Promise<void> {
-    console.log(serverURL);
     const id = ulid();
     const result = await axios.put(
       serverURL + `/api/v1/${username}/task`,
@@ -90,7 +89,6 @@ export default function Home() {
         },
       })
       .then((result) => {
-        console.log(result.data);
         return result.data;
       });
     setTaskData(data);

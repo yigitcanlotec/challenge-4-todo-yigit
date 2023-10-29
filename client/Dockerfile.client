@@ -1,0 +1,31 @@
+# 1. Building the app
+FROM node:20.9.0-slim AS builder
+
+WORKDIR /usr/src/app
+
+# Copy package.json and package-lock.json for installing dependencies
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy the rest of the app
+COPY . .
+
+# Build the Vite project
+RUN npm run build
+
+# 2. Serve the app using a lightweight node server like serve or nginx for production
+FROM node:20.9.0-slim
+
+# Install serve or similar server globally
+RUN npm install -g serve
+
+# Set the working directory
+WORKDIR /usr/src/app
+
+# Copy the build artifacts from the build stage
+COPY --from=builder /usr/src/app/dist ./dist
+
+# Command to serve the app on port 80
+CMD ["serve", "-s", "dist", "-l", "80"]

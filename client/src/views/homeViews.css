@@ -1,20 +1,74 @@
+.top-container {
+  width: 100%;
+  height: 50px;
+  background-color: wheat;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.top-container button {
+  background-color: whitesmoke;
+  color: black;
+  width: 100px;
+  height: 40px;
+  margin-left: 120px;
+  margin-right: 120px;
+}
+
 .home-container {
   width: 100vw;
   height: 100vh;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   overflow: hidden;
 }
 
 .task-container {
+  flex: 1;
   width: 750px;
   height: 500px;
   background-color: white;
   border-radius: 32px;
   color: black;
+  display: flex;
+  flex-direction: column;
 }
 
 .tasks {
   margin: 10px;
+  flex: 1;
+  max-height: 90vh;
+}
+
+.tasks div {
+  border: 1px solid;
+  margin: 5px;
+  text-align: center;
+  height: 75px;
+}
+
+.tasks div:hover {
+  cursor: pointer;
+}
+
+.add-task-container {
+  margin-left: 25px;
+  margin-right: 10px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#add-task {
+  width: 500px;
+}
+
+#add-task-btn {
+  margin-bottom: 5px;
+  margin-left: 10px;
 }

@@ -262,17 +262,17 @@ app.get("/api/v1/:user/tasks", isAuthenticated, async (req, res) => {
 
 app.put("/api/v1/:user/task", isAuthenticated, async (req, res) => {
   // Sanitized from XSS.
+
   const purifiedUsername = DOMPurify.sanitize(req.params.user);
   const purifiedTitle = DOMPurify.sanitize(req.body.title);
-
-  if (typeof req.body.isdone !== "boolean")
+  if (typeof req.body.isDone !== "boolean")
     return res.status(400).send("isDone must be boolean.");
 
   const item = {
     todo_id: { S: ulid() },
     username: { S: purifiedUsername },
     title: { S: purifiedTitle },
-    isDone: { BOOL: req.body.isdone },
+    isDone: { BOOL: req.body.isDone },
   };
 
   const command = new PutItemCommand({

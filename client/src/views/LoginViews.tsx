@@ -3,6 +3,7 @@ import './loginViews.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Message from '../components/message';
+import serverURL from '../contexts/ServerURLContext';
 
 function LoginPage() {
   const [username, setUsername] = useState('');
@@ -24,7 +25,7 @@ function LoginPage() {
     const base64Credentials = btoa(username + ':' + password);
 
     axios
-      .get('http://localhost:3000/api/v1/login', {
+      .get(serverURL + '/api/v1/login', {
         headers: {
           Authorization: `Basic ${base64Credentials}`,
         },

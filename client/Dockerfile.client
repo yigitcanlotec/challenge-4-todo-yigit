@@ -9,8 +9,11 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
-# Copy the rest of the app
-COPY . .
+# Copy files
+COPY ./public ./public
+COPY ./src ./src
+# ... rest of your Dockerfile
+
 
 # Build the Vite project
 RUN npm run build

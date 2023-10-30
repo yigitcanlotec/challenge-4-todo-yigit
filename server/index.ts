@@ -254,9 +254,11 @@ app.get("/api/v1/:user/tasks", isAuthenticated, async (req, res) => {
     return res.sendStatus(204);
   } catch (err) {
     // If error occurs in the query, send the 500 error.
-    logger(req, res, function (error) {
-      if (error) return error.message;
-    });
+    // logger(req, res, function (error) {
+    //   if (error) return error.message;
+    // });
+    console.log(req.params.user);
+    console.log(err);
     return res.sendStatus(500);
   }
 });
@@ -295,16 +297,17 @@ app.put("/api/v1/:user/task", isAuthenticated, async (req, res) => {
   }
 });
 
-app.delete("/api/v1/:user/task", isAuthenticated, async (req, res) => {
+app.delete("/api/v1/:user/:taskId", isAuthenticated, async (req, res) => {
   const purifiedUsername = DOMPurify.sanitize(req.params.user);
-  if (!req.body.todo_id || typeof req.body.todo_id !== "string")
-    return res.sendStatus(400);
+  const purifiedTaskID = DOMPurify.sanitize(req.params.taskId);
+  // if (!req.par.todo_id || typeof req.body.todo_id !== "string")
+  //   return res.sendStatus(400);
 
   const command = new DeleteItemCommand({
     TableName: process.env.TODO_TABLE_NAME,
     Key: {
       username: { S: purifiedUsername },
-      todo_id: { S: req.body.todo_id },
+      todo_id: { S: purifiedTaskID },
     },
   });
 

@@ -29,14 +29,15 @@ export default function Home() {
 
   const markAsDoneOrUndone = async (
     event: React.ChangeEvent<HTMLInputElement>,
+    todo_id: string,
     username,
-    isDone,
+    isDone: Boolean,
     token
   ) => {
     let result;
     if (isDone) {
       result = await axios.post(
-        serverURL + `/api/v1/${username}/${event.currentTarget.id}/undone`,
+        serverURL + `/api/v1/${username}/${todo_id}/undone`,
         {},
         {
           headers: {
@@ -46,7 +47,7 @@ export default function Home() {
       );
     } else {
       result = await axios.post(
-        serverURL + `/api/v1/${username}/${event.currentTarget.id}/done`,
+        serverURL + `/api/v1/${username}/${todo_id}/done`,
         {},
         {
           headers: {
@@ -55,6 +56,22 @@ export default function Home() {
         }
       );
     }
+    getTasks();
+  };
+
+  const deleteTask = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+    username,
+    todo_id: string
+  ) => {
+    const result = await axios.delete(
+      serverURL + `/api/v1/${username}/${todo_id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     getTasks();
   };
 
@@ -122,9 +139,16 @@ export default function Home() {
                   taskId={task.todo_id}
                   titleText={task.title}
                   isDone={task.isDone}
-                  handleClick={(e) =>
-                    markAsDoneOrUndone(e, username, task.isDone, token)
+                  handleMarkClick={(e) =>
+                    markAsDoneOrUndone(
+                      e,
+                      task.todo_id,
+                      username,
+                      task.isDone,
+                      token
+                    )
                   }
+                  handleDelete={(e) => deleteTask(e, username, task.todo_id)}
                 />
               ))}
           </div>

@@ -70,7 +70,6 @@
 .material-symbols-rounded {
   visibility: hidden;
   transition: visibility 0.2s;
-  /* padding-right: 10px; */
   margin-top: 10px;
 }
 

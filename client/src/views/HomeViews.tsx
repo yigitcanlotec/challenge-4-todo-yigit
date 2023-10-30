@@ -102,7 +102,30 @@ export default function Home() {
     }
   };
 
-  const editTask = (event: React.ChangeEvent<HTMLInputElement>) => {};
+  const editTask = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+    username,
+    taskId,
+    title: string,
+    isDone: boolean,
+    token
+  ) => {
+    const data = await axios.post(
+      serverURL + `/api/v1/${username}/${taskId}/edit`,
+      {
+        title: title,
+        isDone: isDone,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (data.status === 200) {
+    }
+  };
 
   const getTasks = async () => {
     const data = await axios

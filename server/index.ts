@@ -382,6 +382,48 @@ app.post("/api/v1/:user/:task/undone", isAuthenticated, async (req, res) => {
   }
 });
 
+app.post("/api/v1/:user/:taskId/edit", isAuthenticated, async (req, res) => {
+  const purifiedUsername = DOMPurify.sanitize(req.params.user);
+  const purifiedTaskID = DOMPurify.sanitize(req.params.taskId);
+
+  if (
+    !req.body.title ||
+    req.body.isDone === undefined ||
+    typeof req.body.isDone !== "boolean" ||
+    typeof req.body.title !== "string"
+  )
+    return res.status(400).send("Geçersiz title veya isDone bilgisi!");
+  const purifiedTitle = DOMPurify.sanitize(req.body.title);
+
+  const params = {
+    TableName: process.env.TODO_TABLE_NAME,
+    Key: marshall({
+      username: purifiedUsername,
+      todo_id: purifiedTaskID,
+    }),
+    UpdateExpression: "set title = :title, isDone = :isDone",
+    ExpressionAttributeValues: marshall({
+      ":title": purifiedTitle,
+      ":isDone": req.body.isDone,
+    }),
+    ReturnValues: ReturnValue.UPDATED_NEW,
+  };
+
+  try {
+    const updatedItem: UpdateItemCommandOutput = await dbClient.send(
+      new UpdateItemCommand(params)
+    );
+
+    if (updatedItem.$metadata.httpStatusCode === 200) {
+      return res.status(200).send("Başarıyla güncellendi!");
+    } else {
+      return res.sendStatus(400);
+    }
+  } catch (err) {
+    return res.sendStatus(500);
+  }
+});
+
 //-------------------------------------
 // For invalid path, return response 418.
 app.use((req, res) => {

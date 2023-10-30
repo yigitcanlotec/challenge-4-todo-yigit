@@ -1,14 +1,13 @@
 # Build stage
 FROM node:14 AS build
 
-WORKDIR /app
+RUN mkdir -p /home/client
 
-# Install dependencies
-COPY package*.json ./
+WORKDIR /home/client
+
+COPY . /home/client
+
 RUN npm install
-
-# Copy the rest of your app's source code
-COPY . .
 
 # Build the project
 RUN npm run build
@@ -16,7 +15,7 @@ RUN npm run build
 # Production stage
 FROM nginx:stable-alpine as production-stage
 
-COPY --from=build /app/dist /usr/share/nginx/html
+COPY --from=build /home/client/dist /usr/share/nginx/html
 
 EXPOSE 80
 

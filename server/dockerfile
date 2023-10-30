@@ -1,0 +1,23 @@
+# Use the official Node.js runtime as a parent image
+FROM node:20.9.0
+
+RUN mkdir -p /home/server
+
+WORKDIR /home/server
+
+COPY . /home/server
+
+#RUN [ -d "/home/server/node_modules" ] && rm -rf "/home/server/node_modules" || echo "Directory does not exist, skipping deletion."
+
+# Install app dependencies
+RUN npm cache clean --force \
+ npm install
+
+# Install TypeScript globally
+RUN npm install -g typescript
+
+
+RUN npx tsc
+
+
+CMD ["node", "dist/app.js"]

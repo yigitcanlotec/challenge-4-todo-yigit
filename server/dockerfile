@@ -13,6 +13,7 @@ COPY . /home/server
 RUN npm cache clean --force \
  npm install
 
+RUN npm install --save-dev @types/node
 # Install TypeScript globally
 RUN npm install -g typescript
 

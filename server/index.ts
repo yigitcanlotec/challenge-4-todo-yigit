@@ -428,6 +428,62 @@ app.post("/api/v1/:user/:taskId/edit", isAuthenticated, async (req, res) => {
   }
 });
 //---------------IMAGES----------------
+app.get("/api/v1/:user/tasks/images", isAuthenticated, async (req, res) => {
+  if (
+    process.env.REGION === undefined ||
+    process.env.ACCESS_KEY_ID === undefined ||
+    process.env.SECRET_ACCESS_KEY === undefined
+  )
+    return res.sendStatus(400);
+
+  const s3Client: S3Client = new S3Client({
+    region: process.env.REGION!,
+    credentials: {
+      accessKeyId: process.env.ACCESS_KEY_ID!,
+      secretAccessKey: process.env.SECRET_ACCESS_KEY!,
+    },
+  });
+
+  let command: ListObjectsV2Command = new ListObjectsV2Command({
+    Bucket: process.env.BUCKET_NAME,
+    Prefix: req.params.user + "/",
+  });
+
+  const response: ListObjectsV2CommandOutput = await s3Client.send(command);
+
+  if (response.Contents) {
+    if (!response.Contents) return res.status(204).send("Images not found.");
+    const files: string[] = (response.Contents as any[]).map(
+      (object: any) => object.Key
+    );
+    const promises = files.map(async (file) => {
+      return getSignedUrl(
+        s3Client,
+        new GetObjectCommand({
+          Bucket: process.env.BUCKET_NAME,
+          Key: file,
+        }),
+        { expiresIn: 60 }
+      );
+    });
+
+    Promise.all(promises)
+      .then((results) => {
+        const fileLinkArray: string[] = results;
+        const mapping: Record<string, any> = {};
+
+        files.forEach((key, index) => {
+          mapping[key] = fileLinkArray[index];
+        });
+        res.status(200).send(mapping);
+      })
+      .catch((error) => {
+        res.sendStatus(500);
+      });
+  } else {
+    res.sendStatus(204);
+  }
+});
 
 app.post(
   "/api/v1/:user/:taskId/image",

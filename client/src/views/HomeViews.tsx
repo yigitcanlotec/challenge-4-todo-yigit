@@ -70,7 +70,7 @@ export default function Home() {
         setMessageBox('');
       }, 2000);
     }
-    getTasks();
+    getTasks(username, token);
   };
 
   const deleteTask = async (
@@ -87,7 +87,7 @@ export default function Home() {
       }
     );
     if (result.status === 200) {
-      getTasks();
+      getTasks(username, token);
       setMessageBox('Başarıyla silindi!');
       errorTimeoutRef.current = setTimeout(() => {
         setMessageBox('');
@@ -127,7 +127,7 @@ export default function Home() {
       }
       setDone(false);
       setTaskTitle('');
-      getTasks().then(() => {
+      getTasks(username, token).then(() => {
         setMessageBox(result.statusText);
         errorTimeoutRef.current = setTimeout(() => {
           setMessageBox('');
@@ -183,7 +183,7 @@ export default function Home() {
     }
   };
 
-  const getTasks = async () => {
+  const getTasks = async (username, token) => {
     const data = await axios
       .get(serverURL + `/api/v1/${username}/tasks`, {
         headers: {
@@ -247,8 +247,26 @@ export default function Home() {
     }
   };
 
+  const getImages = async (user, token) => {
+    const result = await axios.get(serverURL + `/api/v1/${user}/tasks/image`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (result.data) {
+      const imgID = Object.keys(result.data).map(
+        (element) => element.split('/')[1]
+      );
+
+      // imgID.forEach((element, index) => {
+      //     if (document.getElementsByClassName(element).length)
+
+      // });
+    }
+  };
   useEffect(() => {
-    getTasks();
+    getTasks(username, token);
   }, []);
 
   return (

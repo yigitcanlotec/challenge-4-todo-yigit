@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import './loginViews.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Message from '../components/message';
-import serverURL from '../contexts/ServerURLContext';
+import ServerURLContext from '../contexts/ServerURLContext';
 
 function LoginPage() {
   const [username, setUsername] = useState('');
@@ -12,6 +12,7 @@ function LoginPage() {
   const [messageBox, setMessageBox] = useState('');
   const errorTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const navigate = useNavigate();
+  const serverURL = useContext(ServerURLContext);
 
   const inputUsername = (event) => {
     setUsername(event.target.value);
@@ -66,6 +67,13 @@ function LoginPage() {
       });
   };
 
+  function handleKeyDown(event) {
+    if (event.key === 'Enter') {
+      console.log('Key pressed:', event.key);
+      sendLoginRequest();
+    }
+  }
+
   return (
     <div className='login-container'>
       <div className='login-container-left'>
@@ -95,6 +103,7 @@ function LoginPage() {
                 type='button'
                 id='login-button'
                 value='Log In'
+                onKeyDown={(e) => (e.key === 'Enter' ? handleKeyDown : '')}
                 onClick={sendLoginRequest}
               />
             </div>

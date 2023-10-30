@@ -36,14 +36,4 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile.server .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-      - name: Build, tag, and push client image to Amazon ECR
-        working-directory: client
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY_CLIENT: challenge-4-yigit-client
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          echo ECR_REGISTRY = $ECR_REGISTRY
-          echo ECR_REPOSITORY_CLIENT = $ECR_REPOSITORY_CLIENT
-          echo IMAGE_TAG = $IMAGE_TAG
-          docker build -f Dockerfile.client -t "$ECR_REGISTRY/$ECR_REPOSITORY_CLIENT:$IMAGE_TAG" .
+      

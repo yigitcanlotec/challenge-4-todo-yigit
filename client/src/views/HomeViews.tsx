@@ -1,9 +1,10 @@
-import React, { useEffect, useState, useContext } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState, useContext, useRef } from 'react';
+import axios, { AxiosResponse } from 'axios';
 import './homeViews.css';
 import Task from '../components/task';
 import { ulid } from 'ulid';
 import ServerURLContext from '../contexts/ServerURLContext';
+import Message from '../components/message';
 
 type Task = {
   todo_id: string;
@@ -18,6 +19,8 @@ export default function Home() {
   const username = localStorage.getItem('user');
   const token = localStorage.getItem('token');
   const serverURL = useContext(ServerURLContext);
+  const errorTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [messageBox, setMessageBox] = useState('');
 
   const handleTaskChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTaskTitle(event.target.value);
@@ -29,12 +32,13 @@ export default function Home() {
 
   const markAsDoneOrUndone = async (
     event: React.ChangeEvent<HTMLInputElement>,
+    title: string,
     todo_id: string,
     username,
     isDone: Boolean,
     token
   ) => {
-    let result;
+    let result: AxiosResponse;
     if (isDone) {
       result = await axios.post(
         serverURL + `/api/v1/${username}/${todo_id}/undone`,
@@ -56,6 +60,16 @@ export default function Home() {
         }
       );
     }
+    if (result.status === 200) {
+      setMessageBox(
+        `${title} başarıyla ${
+          isDone ? 'yapıldı' : 'yapılmadı'
+        } olarak değiştirildi!`
+      );
+      errorTimeoutRef.current = setTimeout(() => {
+        setMessageBox('');
+      }, 2000);
+    }
     getTasks();
   };
 
@@ -72,7 +86,13 @@ export default function Home() {
         },
       }
     );
-    getTasks();
+    if (result.status === 200) {
+      getTasks();
+      setMessageBox('Başarıyla silindi!');
+      errorTimeoutRef.current = setTimeout(() => {
+        setMessageBox('');
+      }, 2000);
+    }
   };
 
   const handleAddTask = async (param: {
@@ -98,7 +118,12 @@ export default function Home() {
     if (result.status === 201) {
       setDone(false);
       setTaskTitle('');
-      getTasks();
+      getTasks().then(() => {
+        setMessageBox(result.statusText);
+        errorTimeoutRef.current = setTimeout(() => {
+          setMessageBox('');
+        }, 2000);
+      });
     }
   };
 
@@ -167,6 +192,7 @@ export default function Home() {
                   handleMarkClick={(e) =>
                     markAsDoneOrUndone(
                       e,
+                      task.title,
                       task.todo_id,
                       username,
                       task.isDone,
@@ -213,6 +239,7 @@ export default function Home() {
             </div>
           </div>
         </div>
+        {messageBox && <Message errorMessage={messageBox} />}
       </div>
     </>
   );

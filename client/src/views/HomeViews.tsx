@@ -87,7 +87,7 @@ export default function Home() {
 
   const getTasks = async () => {
     const data = await axios
-      .get(`http://localhost:3000/api/v1/${username}/tasks`, {
+      .get(serverURL + `/api/v1/${username}/tasks`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

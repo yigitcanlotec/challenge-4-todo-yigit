@@ -1,6 +1,7 @@
-import React from 'react';
-
+import React, { useContext } from 'react';
+import ServerURLContext from '../contexts/ServerURLContext';
 export default function Task({ taskId, titleText, isDone, handleClick }) {
+  const serverURL = useContext(ServerURLContext);
   return (
     <div
       id={taskId}

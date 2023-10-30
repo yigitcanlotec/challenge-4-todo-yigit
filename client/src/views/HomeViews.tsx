@@ -132,23 +132,45 @@ export default function Home() {
     username,
     taskId,
     title: string,
-    isDone: boolean,
+    isDone: Boolean,
     token
   ) => {
-    const data = await axios.post(
-      serverURL + `/api/v1/${username}/${taskId}/edit`,
-      {
-        title: title,
-        isDone: isDone,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const element = document.getElementById(taskId);
 
-    if (data.status === 200) {
+    console.log(element);
+    if (element) {
+      const newInput = document.createElement('input');
+      newInput.className = `input-title`;
+      newInput.style.marginLeft = '210px';
+      newInput.style.marginTop = '20px';
+      newInput.type = 'text';
+      newInput.value = title!;
+      while (element.firstChild) {
+        element.removeChild(element.firstChild);
+      }
+      element.appendChild(newInput);
+      const spanElement = document.createElement('span');
+      spanElement.className = 'material-symbols-outlined';
+      spanElement.innerText = 'done';
+      spanElement.style.marginLeft = '25px';
+      spanElement.onclick = async () => {
+        const result = await axios.post(
+          serverURL + `/api/v1/${username}/${taskId}/edit`,
+          {
+            title: newInput.value,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (result.status === 200) {
+          window.location.reload();
+        }
+      };
+
+      element.appendChild(spanElement);
     }
   };
 
@@ -200,7 +222,16 @@ export default function Home() {
                     )
                   }
                   handleDelete={(e) => deleteTask(e, username, task.todo_id)}
-                  handleEdit={(e) => editTask}
+                  handleEdit={(e) =>
+                    editTask(
+                      e,
+                      username,
+                      task.todo_id,
+                      task.title,
+                      task.isDone,
+                      token
+                    )
+                  }
                 />
               ))}
           </div>

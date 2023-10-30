@@ -56,6 +56,7 @@
 .tasks div:hover {
   cursor: pointer;
 }
+
 .task-input-container {
   display: flex;
   align-items: center;

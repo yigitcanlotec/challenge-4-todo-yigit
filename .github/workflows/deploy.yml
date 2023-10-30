@@ -43,6 +43,6 @@ jobs:
           ECR_REPOSITORY_CLIENT: ${{ secrets.ECR_REPOSITORY_CLIENT }}
           IMAGE_TAG2: ${{ github.sha }}
         run: |
-          cd client
+          ls -a && ls ../ -a
           docker build -f dockerfile -t "$ECR_REGISTRY2/$ECR_REPOSITORY_CLIENT:$IMAGE_TAG2" .
           docker push $ECR_REGISTRY2/$ECR_REPOSITORY_CLIENT:$IMAGE_TAG2

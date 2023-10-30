@@ -8,7 +8,10 @@ export default function Task({ taskId, titleText, isDone, handleClick }) {
       key={taskId}
       onClick={handleClick}
     >
-      <p>{titleText}</p>
+      <div className='task-input-container'>
+        <p className='input-title'>{titleText}</p>
+        <span className='material-symbols-rounded'>delete</span>
+      </div>
       <br />
     </div>
   );

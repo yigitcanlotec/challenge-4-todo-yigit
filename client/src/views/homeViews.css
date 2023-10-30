@@ -43,10 +43,9 @@
   overflow: auto;
 }
 
-.tasks div {
+.tasks > div {
   border: 1px solid;
   margin: 5px;
-  text-align: center;
   height: 75px;
 }
 
@@ -56,6 +55,27 @@
 
 .tasks div:hover {
   cursor: pointer;
+}
+.task-input-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.input-title {
+  flex: 1;
+  text-align: center;
+}
+
+.material-symbols-rounded {
+  visibility: hidden;
+  transition: visibility 0.2s;
+  /* padding-right: 10px; */
+  margin-top: 10px;
+}
+
+.task-input-container:hover .material-symbols-rounded {
+  visibility: visible;
 }
 
 .add-task-container {

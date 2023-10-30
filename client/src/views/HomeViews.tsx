@@ -75,10 +75,10 @@ export default function Home() {
     getTasks();
   };
 
-  async function handleAddTask(param: {
+  const handleAddTask = async (param: {
     title: string;
     isDone: boolean;
-  }): Promise<void> {
+  }): Promise<void> => {
     const id = ulid();
     const result = await axios.put(
       serverURL + `/api/v1/${username}/task`,
@@ -100,7 +100,9 @@ export default function Home() {
       setTaskTitle('');
       getTasks();
     }
-  }
+  };
+
+  const editTask = (event: React.ChangeEvent<HTMLInputElement>) => {};
 
   const getTasks = async () => {
     const data = await axios
@@ -149,6 +151,7 @@ export default function Home() {
                     )
                   }
                   handleDelete={(e) => deleteTask(e, username, task.todo_id)}
+                  handleEdit={(e) => editTask}
                 />
               ))}
           </div>

@@ -65,12 +65,14 @@
 .input-title {
   flex: 1;
   text-align: center;
+  padding-left: 40px;
 }
 
 .material-symbols-rounded {
   visibility: hidden;
   transition: visibility 0.2s;
   margin-top: 10px;
+  margin-right: 5px;
 }
 
 .task-input-container:hover .material-symbols-rounded {

@@ -7,6 +7,7 @@ export default function Task({
   isDone,
   handleMarkClick,
   handleDelete,
+  handleEdit,
 }) {
   const serverURL = useContext(ServerURLContext);
   const username = localStorage.getItem('user');
@@ -32,6 +33,9 @@ export default function Task({
         </p>
         <span className='material-symbols-rounded' onClick={handleDelete}>
           delete
+        </span>
+        <span className='material-symbols-rounded' onClick={handleEdit}>
+          edit
         </span>
       </div>
       <br />

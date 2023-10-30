@@ -67,13 +67,6 @@ function LoginPage() {
       });
   };
 
-  function handleKeyDown(event) {
-    if (event.key === 'Enter') {
-      console.log('Key pressed:', event.key);
-      sendLoginRequest();
-    }
-  }
-
   return (
     <div className='login-container'>
       <div className='login-container-left'>
@@ -103,7 +96,6 @@ function LoginPage() {
                 type='button'
                 id='login-button'
                 value='Log In'
-                onKeyDown={(e) => (e.key === 'Enter' ? handleKeyDown : '')}
                 onClick={sendLoginRequest}
               />
             </div>

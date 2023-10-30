@@ -95,17 +95,18 @@ export default function Home() {
     }
   };
 
-  const handleAddTask = async (param: {
-    title: string;
-    isDone: boolean;
-  }): Promise<void> => {
+  const handleAddTask = async (
+    title: string,
+    isDone: boolean,
+    username
+  ): Promise<void> => {
     const id = ulid();
     const result = await axios.put(
       serverURL + `/api/v1/${username}/task`,
       {
         todo_id: id,
         username: username,
-        title: param.title,
+        title: title,
         isDone: isDone,
       },
       {
@@ -116,6 +117,14 @@ export default function Home() {
     );
 
     if (result.status === 201) {
+      const inputElement = document.getElementById(
+        'file-input'
+      ) as HTMLInputElement;
+      const files = inputElement?.files;
+
+      if (files) {
+        handleFileChange(files, id, username, token);
+      }
       setDone(false);
       setTaskTitle('');
       getTasks().then(() => {
@@ -185,6 +194,57 @@ export default function Home() {
         return result.data;
       });
     setTaskData(data);
+  };
+
+  const handleFileChange = async (files, taskId, username, token) => {
+    if (files.length > 0) {
+      for (const file of files) {
+        const postData = {
+          fileName: username + '/' + taskId + '/' + file.name,
+        };
+
+        await axios
+          .post(serverURL + `/api/v1/${username}/${taskId}/image`, postData, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+          .then(async (result) => {
+            const presignedUrl = result.data;
+
+            try {
+              const response = await axios.put(presignedUrl, file, {
+                headers: {
+                  'Content-Type': file.type,
+                },
+              });
+
+              if (response.status === 200) {
+                setMessageBox('Object uploaded successfuly.');
+                errorTimeoutRef.current = setTimeout(() => {
+                  setMessageBox('');
+                }, 2000);
+              } else {
+                setMessageBox('Error uploading object');
+                errorTimeoutRef.current = setTimeout(() => {
+                  setMessageBox('');
+                }, 2000);
+              }
+            } catch (error) {
+              setMessageBox('Error uploading object');
+              errorTimeoutRef.current = setTimeout(() => {
+                setMessageBox('');
+              }, 2000);
+            }
+          })
+          .catch((error) => {
+            setMessageBox(error);
+            errorTimeoutRef.current = setTimeout(() => {
+              setMessageBox('');
+            }, 2000);
+          });
+      }
+    }
   };
 
   useEffect(() => {
@@ -260,10 +320,7 @@ export default function Home() {
               />
               <button
                 id='add-task-btn'
-                onClick={handleAddTask.bind(null, {
-                  title: taskTitle,
-                  isDone: isDone,
-                })}
+                onClick={(e) => handleAddTask(taskTitle, isDone, username)}
               >
                 Ekle
               </button>

@@ -23,6 +23,17 @@ import {
   ReturnValue,
   DeleteItemInput,
 } from "@aws-sdk/client-dynamodb";
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+  ListObjectsV2Command,
+  DeleteObjectCommand,
+  ListObjectsV2CommandOutput,
+  ListObjectsV2CommandInput,
+  DeleteObjectCommandInput,
+} from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import morgan from "morgan";
 import { marshall } from "@aws-sdk/util-dynamodb";
 import { ulid } from "ulid";
@@ -416,6 +427,35 @@ app.post("/api/v1/:user/:taskId/edit", isAuthenticated, async (req, res) => {
     return res.sendStatus(500);
   }
 });
+//---------------IMAGES----------------
+
+app.post(
+  "/api/v1/:user/:taskId/image",
+  isAuthenticated,
+  async (req: Request, res: Response) => {
+    if (
+      req.body.fileName === undefined ||
+      typeof req.body.fileName !== "string"
+    )
+      return res.status(400).send("Invalid request body parameter.");
+    const s3Client = new S3Client({
+      region: process.env.REGION!,
+      credentials: {
+        accessKeyId: process.env.ACCESS_KEY_ID!,
+        secretAccessKey: process.env.SECRET_ACCESS_KEY!,
+      },
+    });
+
+    const command = new PutObjectCommand({
+      Bucket: process.env.BUCKET_NAME,
+      Key: req.body.fileName,
+    });
+
+    const url = await getSignedUrl(s3Client, command, { expiresIn: 60 });
+
+    res.status(200).send(url);
+  }
+);
 
 //-------------------------------------
 // For invalid path, return response 418.

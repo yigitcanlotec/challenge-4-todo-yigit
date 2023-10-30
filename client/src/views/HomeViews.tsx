@@ -78,7 +78,11 @@ export default function Home() {
       }
     );
 
-    if (result.status === 200) console.log('basarili');
+    if (result.status === 201) {
+      setDone(false);
+      setTaskTitle('');
+      getTasks();
+    }
   }
 
   const getTasks = async () => {

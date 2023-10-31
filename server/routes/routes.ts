@@ -90,7 +90,7 @@ async function isAuthenticated(
   }
 }
 
-async function login(req: Request, res: Response) {
+async function login(req: Request, res: Response, next: NextFunction) {
   // Receive auth info.
   const userInfo = getUserInfo(
     parseBasicAuthHeader(req.headers.authorization || "")
@@ -98,7 +98,7 @@ async function login(req: Request, res: Response) {
   const username = userInfo?.username;
   const password = userInfo?.password;
 
-  if (!username) return res.sendStatus(403);
+  if (!username) return res.status(403).send("Unauthorized");
 
   // Check if user exists or not.
   const command = new QueryCommand({

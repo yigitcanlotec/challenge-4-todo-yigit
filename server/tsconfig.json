@@ -8,6 +8,9 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true
   },
-  "include": ["*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "*.ts",
+    "./vitest/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"
+  ],
+  "exclude": ["node_modules", "vitest/**/*"]
 }

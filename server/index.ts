@@ -87,7 +87,8 @@ async function isAuthenticated(
 ) {
   if (!req.headers.authorization) return res.sendStatus(400);
   const token = parseBearerAuthHeader(req.headers.authorization);
-  if (!token) return res.sendStatus(400);
+  // If token is invalid then return status 400.
+  if (!token) return res.status(400).send("Invalid authorization info.");
 
   const command = new QueryCommand({
     TableName: process.env.USER_TABLE_NAME,
@@ -101,10 +102,11 @@ async function isAuthenticated(
   try {
     const results = await dbClient.send(command);
     if (!results.Count || results.Items === undefined)
+      // Invalid authentication.
       return res.sendStatus(404);
     for (const item of results.Items) {
       if (item.session_key && item.session_key.S === token) {
-        return next();
+        return next(); // Valid authentication.
       }
     }
     return res.sendStatus(403);
@@ -262,25 +264,28 @@ app.get("/api/v1/:user/tasks", isAuthenticated, async (req, res) => {
       });
       return res.status(200).send(parsedItems);
     }
-    return res.sendStatus(204);
+
+    return res.status(204).send("There are no tasks.");
   } catch (err) {
-    // If error occurs in the query, send the 500 error.
     // logger(req, res, function (error) {
     //   if (error) return error.message;
     // });
-    console.log(req.params.user);
-    console.log(err);
+
+    // If error occurs in the query, send the 500 error.
     return res.sendStatus(500);
   }
 });
 
 app.put("/api/v1/:user/task", isAuthenticated, async (req, res) => {
   // Sanitized from XSS.
-
   const purifiedUsername = DOMPurify.sanitize(req.params.user);
+  if (
+    typeof req.body.isDone !== "boolean" &&
+    typeof req.body.title !== "string"
+  )
+    return res.status(400).send("Invalid parameters.");
+
   const purifiedTitle = DOMPurify.sanitize(req.body.title);
-  if (typeof req.body.isDone !== "boolean")
-    return res.status(400).send("isDone must be boolean.");
 
   const item = {
     todo_id: { S: ulid() },
@@ -311,8 +316,6 @@ app.put("/api/v1/:user/task", isAuthenticated, async (req, res) => {
 app.delete("/api/v1/:user/:taskId", isAuthenticated, async (req, res) => {
   const purifiedUsername = DOMPurify.sanitize(req.params.user);
   const purifiedTaskID = DOMPurify.sanitize(req.params.taskId);
-  // if (!req.par.todo_id || typeof req.body.todo_id !== "string")
-  //   return res.sendStatus(400);
 
   const command = new DeleteItemCommand({
     TableName: process.env.TODO_TABLE_NAME,
@@ -398,7 +401,7 @@ app.post("/api/v1/:user/:taskId/edit", isAuthenticated, async (req, res) => {
   const purifiedTaskID = DOMPurify.sanitize(req.params.taskId);
 
   if (!req.body.title || typeof req.body.title !== "string")
-    return res.status(400).send("Geçersiz title veya isDone bilgisi!");
+    return res.status(400).send("Invalid parameters.");
   const purifiedTitle = DOMPurify.sanitize(req.body.title);
 
   const params = {
@@ -419,7 +422,7 @@ app.post("/api/v1/:user/:taskId/edit", isAuthenticated, async (req, res) => {
       new UpdateItemCommand(params)
     );
     if (updatedItem.$metadata.httpStatusCode === 200) {
-      return res.status(200).send("Başarıyla güncellendi!");
+      return res.status(200).send("Successfully updated!");
     } else {
       return res.sendStatus(400);
     }
@@ -427,6 +430,7 @@ app.post("/api/v1/:user/:taskId/edit", isAuthenticated, async (req, res) => {
     return res.sendStatus(500);
   }
 });
+
 //---------------IMAGES----------------
 app.get("/api/v1/:user/tasks/images", isAuthenticated, async (req, res) => {
   if (
@@ -434,7 +438,7 @@ app.get("/api/v1/:user/tasks/images", isAuthenticated, async (req, res) => {
     process.env.ACCESS_KEY_ID === undefined ||
     process.env.SECRET_ACCESS_KEY === undefined
   )
-    return res.sendStatus(400);
+    return res.status(400).send("Invalid authorization.");
 
   const s3Client: S3Client = new S3Client({
     region: process.env.REGION!,

@@ -29,6 +29,7 @@ import {
   GetObjectCommand,
   ListObjectsV2Command,
   DeleteObjectCommand,
+  DeleteObjectsCommand,
   ListObjectsV2CommandOutput,
   ListObjectsV2CommandInput,
   DeleteObjectCommandInput,
@@ -492,7 +493,7 @@ app.get("/api/v1/:user/tasks/images", isAuthenticated, async (req, res) => {
 });
 
 app.post(
-  "/api/v1/:user/:taskId/image",
+  "/api/v1/:user/:taskId/images",
   isAuthenticated,
   async (req: Request, res: Response) => {
     if (
@@ -516,6 +517,41 @@ app.post(
     const url = await getSignedUrl(s3Client, command, { expiresIn: 60 });
 
     res.status(200).send(url);
+  }
+);
+
+app.delete(
+  "/api/v1/:user/:taskId/images",
+  isAuthenticated,
+  async (req, res) => {
+    const s3Client = new S3Client({
+      region: process.env.REGION!,
+      credentials: {
+        accessKeyId: process.env.ACCESS_KEY_ID!,
+        secretAccessKey: process.env.SECRET_ACCESS_KEY!,
+      },
+    });
+
+    console.log(req.params.user, req.params.taskId);
+
+    try {
+      const params: DeleteObjectCommandInput = {
+        Bucket: process.env.BUCKET_NAME,
+        Key: req.params.user + "/" + req.params.taskId + "/",
+      };
+
+      const command = new DeleteObjectCommand(params);
+      const response = await s3Client.send(command);
+
+      // console.log(`Successfully deleted ${OBJECT_KEY} from ${BUCKET_NAME}`, response);
+
+      if (response.$metadata.httpStatusCode === 200)
+        return res.status(200).send("Deleted.");
+      return res.sendStatus(response.$metadata.httpStatusCode!);
+    } catch (error) {
+      // console.error("Error deleting object:", error);
+      return res.status(500).send("Delete operation server error.");
+    }
   }
 );
 

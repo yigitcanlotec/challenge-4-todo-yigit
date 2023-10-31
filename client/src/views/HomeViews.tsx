@@ -71,6 +71,7 @@ export default function Home() {
       }, 2000);
     }
     getTasks(username, token);
+    getImages(username, token);
   };
 
   const deleteTask = async (
@@ -88,6 +89,8 @@ export default function Home() {
     );
     if (result.status === 200) {
       getTasks(username, token);
+
+      // getImages(username, token);
       setMessageBox('Başarıyla silindi!');
       errorTimeoutRef.current = setTimeout(() => {
         setMessageBox('');
@@ -133,6 +136,7 @@ export default function Home() {
           setMessageBox('');
         }, 2000);
       });
+      getImages(username, token);
     }
   };
 
@@ -203,7 +207,7 @@ export default function Home() {
         };
 
         await axios
-          .post(serverURL + `/api/v1/${username}/${taskId}/image`, postData, {
+          .post(serverURL + `/api/v1/${username}/${taskId}/images`, postData, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -252,7 +256,7 @@ export default function Home() {
         Authorization: `Bearer ${token}`,
       },
     });
-
+    console.log(result);
     if (result.data) {
       const imgID = Object.keys(result.data).map(
         (element) => element.split('/').slice(1)[0]
@@ -272,10 +276,12 @@ export default function Home() {
         createImgElement.height = 30;
         createImgElement.src =
           (Object.values(result.data)[index] as string) || '';
-        queryElement?.appendChild(createImgElement);
+        if (!document.getElementById(`img-${todo_id}`))
+          queryElement?.appendChild(createImgElement);
       });
     }
   };
+
   useEffect(() => {
     getTasks(username, token);
     getImages(username, token);

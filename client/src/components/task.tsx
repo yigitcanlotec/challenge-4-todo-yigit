@@ -13,18 +13,6 @@ export default function Task({
   const username = localStorage.getItem('user');
   const token = localStorage.getItem('token');
 
-  const getTasks = async () => {
-    const data = await axios
-      .get(serverURL + `/api/v1/${username}/tasks`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((result) => {
-        return result.data;
-      });
-  };
-
   return (
     <div id={taskId} className={isDone ? 'true' : ''} key={taskId}>
       <div className='task-input-container'>

@@ -38,7 +38,6 @@ export default function Task({
           edit
         </span>
       </div>
-      <br />
     </div>
   );
 }

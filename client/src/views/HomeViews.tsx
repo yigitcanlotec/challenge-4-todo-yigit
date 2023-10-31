@@ -146,7 +146,6 @@ export default function Home() {
   ) => {
     const element = document.getElementById(taskId);
 
-    console.log(element);
     if (element) {
       const newInput = document.createElement('input');
       newInput.className = `input-title`;
@@ -248,7 +247,7 @@ export default function Home() {
   };
 
   const getImages = async (user, token) => {
-    const result = await axios.get(serverURL + `/api/v1/${user}/tasks/image`, {
+    const result = await axios.get(serverURL + `/api/v1/${user}/tasks/images`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -256,17 +255,30 @@ export default function Home() {
 
     if (result.data) {
       const imgID = Object.keys(result.data).map(
-        (element) => element.split('/')[1]
+        (element) => element.split('/').slice(1)[0]
       );
 
-      // imgID.forEach((element, index) => {
-      //     if (document.getElementsByClassName(element).length)
-
-      // });
+      imgID.forEach((element, index) => {
+        let todo_id = element;
+        if (/[0-9]/.test(todo_id.charAt(0))) {
+          todo_id = `#\\3${todo_id.charAt(0)} ${todo_id.slice(1)}`;
+        } else {
+          todo_id = `#${todo_id}`;
+        }
+        const queryElement = document.querySelector(`${todo_id}`);
+        const createImgElement = document.createElement('img');
+        createImgElement.id = `img-${todo_id}`;
+        createImgElement.width = 30;
+        createImgElement.height = 30;
+        createImgElement.src =
+          (Object.values(result.data)[index] as string) || '';
+        queryElement?.appendChild(createImgElement);
+      });
     }
   };
   useEffect(() => {
     getTasks(username, token);
+    getImages(username, token);
   }, []);
 
   return (

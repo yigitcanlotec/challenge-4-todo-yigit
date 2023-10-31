@@ -280,15 +280,16 @@ app.put("/api/v1/:user/task", isAuthenticated, async (req, res) => {
   // Sanitized from XSS.
   const purifiedUsername = DOMPurify.sanitize(req.params.user);
   if (
-    typeof req.body.isDone !== "boolean" &&
-    typeof req.body.title !== "string"
+    typeof req.body.isDone !== "boolean" ||
+    typeof req.body.title !== "string" ||
+    typeof req.body.todo_id !== "string"
   )
     return res.status(400).send("Invalid parameters.");
 
   const purifiedTitle = DOMPurify.sanitize(req.body.title);
 
   const item = {
-    todo_id: { S: ulid() },
+    todo_id: { S: req.body.todo_id },
     username: { S: purifiedUsername },
     title: { S: purifiedTitle },
     isDone: { BOOL: req.body.isDone },
@@ -456,6 +457,7 @@ app.get("/api/v1/:user/tasks/images", isAuthenticated, async (req, res) => {
   const response: ListObjectsV2CommandOutput = await s3Client.send(command);
 
   if (response.Contents) {
+    // console.log(response.Contents);
     if (!response.Contents) return res.status(204).send("Images not found.");
     const files: string[] = (response.Contents as any[]).map(
       (object: any) => object.Key

@@ -47,14 +47,20 @@
   border: 1px solid;
   margin: 5px;
   height: 75px;
+  overflow: hidden;
+  padding-bottom: 15px;
+}
+
+.tasks > div img {
+  margin-left: 3px;
+}
+
+.tasks div p:hover {
+  cursor: pointer;
 }
 
 .tasks div[class='true'] p {
   text-decoration: line-through;
-}
-
-.tasks div:hover {
-  cursor: pointer;
 }
 
 .task-input-container {

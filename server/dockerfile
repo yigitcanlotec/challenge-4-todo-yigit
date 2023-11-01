@@ -21,4 +21,4 @@ RUN npm install -g typescript
 RUN npx tsc
 
 
-CMD ["node", "dist/app.js"]
+CMD ["node", "dist/index.js"]

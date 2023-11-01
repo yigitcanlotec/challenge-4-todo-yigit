@@ -1,6 +1,5 @@
 import express, { Request, Response, NextFunction } from "express";
 import dotenv from "dotenv";
-import cors from "cors";
 import {
   generateToken,
   sanitizeInput,
@@ -13,15 +12,13 @@ import {
   DynamoDBClient,
   QueryCommand,
   QueryCommandOutput,
-  GetItemCommand,
   DeleteItemCommand,
   AttributeValue,
   PutItemCommand,
   UpdateItemCommand,
-  UpdateItemInput,
   UpdateItemCommandOutput,
   ReturnValue,
-  DeleteItemInput,
+  PutItemCommandOutput,
 } from "@aws-sdk/client-dynamodb";
 import {
   S3Client,
@@ -29,15 +26,12 @@ import {
   GetObjectCommand,
   ListObjectsV2Command,
   DeleteObjectCommand,
-  DeleteObjectsCommand,
   ListObjectsV2CommandOutput,
-  ListObjectsV2CommandInput,
   DeleteObjectCommandInput,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import morgan from "morgan";
 import { marshall } from "@aws-sdk/util-dynamodb";
-import { ulid } from "ulid";
 import createDOMPurify from "dompurify";
 import { JSDOM } from "jsdom";
 
@@ -195,9 +189,10 @@ async function register(req: Request, res: Response) {
           username: { S: req.body.username },
           password: { S: req.body.password },
         },
+        ConditionExpression: "attribute_not_exists(username)",
       })
     );
-
+    // console.log(result.$metadata.httpStatusCode);
     if (result.$metadata.httpStatusCode === 200) {
       //If successful;
       return res.sendStatus(201);
@@ -209,7 +204,13 @@ async function register(req: Request, res: Response) {
       return res.sendStatus(500);
     }
   } catch (error) {
-    // If error occurs, then return the 500 error.
+    if (
+      error &&
+      (error as PutItemCommandOutput).$metadata &&
+      (error as PutItemCommandOutput).$metadata.httpStatusCode
+    )
+      return res.status(400).send("User Exists.");
+    // If error occurs, then return the error.
     return res.sendStatus(500);
   }
 }

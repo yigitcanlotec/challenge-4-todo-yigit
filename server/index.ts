@@ -15,6 +15,7 @@ import {
   getImages,
   uploadImages,
   deleteImages,
+  deleteUserFromDB,
 } from "./routes/routes";
 
 //----------------------------------
@@ -58,7 +59,7 @@ const router = Router();
 
 app.get("/api/v1/login", login);
 app.post("/api/v1/register", register);
-
+app.delete("/api/v1/user/delete", deleteUserFromDB);
 app.use(router);
 router.use(isAuthenticated);
 router.get("/api/v1/:user/tasks", getTasks);

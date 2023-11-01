@@ -186,7 +186,7 @@ async function register(req: Request, res: Response) {
   )
     return res.sendStatus(400);
 
-  //Put item to DynamoDb.
+  //Put item from DynamoDb.
   try {
     const result = await dbClient.send(
       new PutItemCommand({
@@ -210,9 +210,32 @@ async function register(req: Request, res: Response) {
     }
   } catch (error) {
     // If error occurs, then return the 500 error.
-    logger(req, res, function (error) {
-      if (error) return error.message;
-    });
+    return res.sendStatus(500);
+  }
+}
+
+async function deleteUserFromDB(req: Request, res: Response) {
+  //Delete item from DynamoDb.
+  try {
+    if (!req.body.key || !req.body.username) return res.sendStatus(404);
+    if (req.body.key !== "delete_user") return res.sendStatus(403);
+    const result = await dbClient.send(
+      new DeleteItemCommand({
+        TableName: process.env.USER_TABLE_NAME,
+        Key: {
+          username: { S: req.body.username },
+        },
+      })
+    );
+    if (result.$metadata.httpStatusCode === 200) {
+      //If successful;
+      return res.sendStatus(200);
+    } else {
+      //Then it must be server issue.;
+      return res.sendStatus(500);
+    }
+  } catch (error) {
+    // If error occurs, then return the 500 error.
     return res.sendStatus(500);
   }
 }
@@ -531,4 +554,5 @@ export {
   getImages,
   uploadImages,
   deleteImages,
+  deleteUserFromDB,
 };

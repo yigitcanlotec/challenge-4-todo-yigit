@@ -10,7 +10,8 @@
   },
   "include": [
     "*.ts",
-    "./vitest/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"
+    "./vitest/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
+    "vitest/vitest.config.ts"
   ],
   "exclude": ["node_modules", "vitest/**/*"]
 }

@@ -60,7 +60,8 @@ async function isAuthenticated(
   res: Response,
   next: NextFunction
 ) {
-  if (!req.headers.authorization) return res.sendStatus(400);
+  if (!req.headers.authorization)
+    return res.status(400).send("Invalid authorization header.");
   const token = parseBearerAuthHeader(req.headers.authorization);
   // If token is invalid then return status 400.
   if (!token) return res.status(400).send("Invalid authorization info.");
@@ -78,15 +79,15 @@ async function isAuthenticated(
     const results = await dbClient.send(command);
     if (!results.Count || results.Items === undefined)
       // Invalid authentication.
-      return res.sendStatus(404);
+      return res.status(404).send("Invalid authentication info.");
     for (const item of results.Items) {
       if (item.session_key && item.session_key.S === token) {
         return next(); // Valid authentication.
       }
     }
-    return res.sendStatus(403);
+    return res.status(403).send("Unauthorized authentication.");
   } catch (err) {
-    return res.sendStatus(500);
+    return res.status(500).send("Authentication server error.");
   }
 }
 
@@ -95,10 +96,13 @@ async function login(req: Request, res: Response, next: NextFunction) {
   const userInfo = getUserInfo(
     parseBasicAuthHeader(req.headers.authorization || "")
   );
+  // console.log(userInfo);
+
   const username = userInfo?.username;
   const password = userInfo?.password;
 
-  if (!username) return res.status(403).send("Unauthorized");
+  if (!username || !password)
+    return res.status(403).send("Invalid login parameters.");
 
   // Check if user exists or not.
   const command = new QueryCommand({
@@ -115,7 +119,6 @@ async function login(req: Request, res: Response, next: NextFunction) {
     results = await dbClient.send(command);
   } catch (err) {
     // If error occurs in the query, send the 500 error.
-    console.log(err);
     logger(req, res, function (error) {
       if (error) return error.message;
     });
@@ -123,7 +126,8 @@ async function login(req: Request, res: Response, next: NextFunction) {
   }
 
   // If user and results not exists, return 404.
-  if (!results.Count || results.Items === undefined) return res.sendStatus(404);
+  if (!results.Count || results.Items === undefined)
+    return res.status(404).send("Invalid login info.");
 
   // If user is exist, first check the password.
   for (const item of results.Items) {
@@ -152,24 +156,21 @@ async function login(req: Request, res: Response, next: NextFunction) {
         if (updatedToken.$metadata.httpStatusCode === 200) {
           //If user exists;
           return res.status(200).send(token);
-        } else if (updatedToken.$metadata.httpStatusCode === 204) {
-          //If no content;
-          return res.sendStatus(204);
         } else {
           //Then it must be server issue.;
-          return res.sendStatus(500);
+          return res.status(500).send("Error occurs while login in.");
         }
       } catch (error) {
         // If something happens in this stage, then it's a server problem.
-        logger(req, res, function (error) {
-          if (error) return error.message;
-        });
-        return res.sendStatus(500);
+        // logger(req, res, function (error) {
+        //   if (error) return error.message;
+        // });
+        return res.status(500).send("Login server error.");
       }
     }
   }
   // If passwords not match.
-  return res.sendStatus(403);
+  return res.status(403).send("Invalid login.");
 }
 
 async function register(req: Request, res: Response) {

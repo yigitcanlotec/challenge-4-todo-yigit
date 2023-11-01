@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "vitest",
-    "start": "nodemon ./index.ts"
+    "start": "tsc && node ./dist/index.js"
   },
   "keywords": [],
   "author": "Yigitcan Ustek <yigitcan.ustek@lotec.com.tr>",

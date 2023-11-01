@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction, Router } from "express";
 import cors from "cors";
 import morgan from "morgan";
-
+import * as http from "http";
 import {
   isAuthenticated,
   login,
@@ -22,7 +22,15 @@ import {
 
 const app = express();
 app.use(cors());
-app.use(morgan("dev"));
+
+morgan.token("status-text", function (req, res) {
+  return http.STATUS_CODES[res.statusCode];
+});
+
+const morganFormat =
+  ":method :url :status :status-text :res[content-length] - :response-time ms";
+
+app.use(morgan(morganFormat));
 
 interface ExpressJSError extends SyntaxError {
   status?: number;
@@ -47,11 +55,12 @@ app.use(
 );
 
 const router = Router();
+
 app.get("/api/v1/login", login);
 app.post("/api/v1/register", register);
 
-router.use(isAuthenticated);
 app.use(router);
+router.use(isAuthenticated);
 router.get("/api/v1/:user/tasks", getTasks);
 router.put("/api/v1/:user/task", addTask);
 router.delete("/api/v1/:user/:taskId", deleteTask);

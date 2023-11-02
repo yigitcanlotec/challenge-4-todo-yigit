@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "vitest",
+    "test": "vitest --config ./vitest/vitest.config.ts",
     "start": "tsc && node ./dist/index.js"
   },
   "keywords": [],

@@ -14,11 +14,23 @@ import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
 import { ulid } from "ulid";
+import { beforeEach } from "node:test";
 dotenv.config();
 
 const username = "vitest";
 const password = "password";
 let token = "";
+
+describe("Invalid Path", () => {
+  test("Wrong Path", async () => {
+    try {
+      const res = await axios.get(process.env.SERVER_URL + "/wrongPATH");
+    } catch (error) {
+      expect(error.response.status).toBe(400);
+    }
+  });
+});
+
 describe("Login API", () => {
   test("Successful Login", async function (done) {
     const base64Credentials = Buffer.from(`${username}:${password}`).toString(
@@ -200,21 +212,23 @@ describe("Tasks", () => {
     expect(res.status).toBe(200);
   });
 
-  test("Upload a Image", () => {
-    const filePath = path.join(__dirname, "test.jpg");
-
-    const file = fs.readFile(filePath, (err, data) => {
-      if (err) {
-        console.error("Error reading the file:", err);
-        return;
-      }
-      return data;
+  test("Upload a Image", async () => {
+    const filePath = path.join(__dirname, "/test.jpg");
+    const file = await new Promise((resolve, reject) => {
+      fs.readFile(filePath, (err, data) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(data);
+      });
     });
+
     const postData = {
       fileName: username + "/" + id + "/test.jpg",
     };
 
-    axios
+    await axios
       .post(
         process.env.SERVER_URL + `/api/v1/${username}/${id}/images`,
         postData,
@@ -226,14 +240,8 @@ describe("Tasks", () => {
       )
       .then(async (result) => {
         const presignedUrl = result.data;
-        console.log("pres:", presignedUrl);
         try {
-          const response = await axios.put(presignedUrl, file, {
-            headers: {
-              "Content-Type": "image/jpeg",
-            },
-          });
-          console.log(response);
+          const response = await axios.put(presignedUrl, file, {});
         } catch (error) {
           console.log(error);
         }
@@ -241,6 +249,19 @@ describe("Tasks", () => {
       .catch((error) => {
         console.log(error);
       });
+  });
+
+  test("Delete Image", async () => {
+    beforeEach(() => {});
+    const result = await axios.delete(
+      process.env.SERVER_URL + `/api/v1/${username}/${id}/images`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    // console.log(result);
   });
 
   test("Delete Task", async () => {

@@ -28,6 +28,7 @@ import {
   DeleteObjectCommand,
   ListObjectsV2CommandOutput,
   DeleteObjectCommandInput,
+  ListObjectsV2CommandInput,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import morgan from "morgan";
@@ -520,25 +521,39 @@ async function deleteImages(req: Request, res: Response) {
     },
   });
 
-  console.log(req.params.user, req.params.taskId);
-
   try {
-    const params: DeleteObjectCommandInput = {
+    // List objects within the folder
+    const listParams: ListObjectsV2CommandInput = {
       Bucket: process.env.BUCKET_NAME,
-      Key: req.params.user + "/" + req.params.taskId + "/",
+      Prefix: req.params.user + "/" + req.params.taskId,
     };
+    const data = await s3Client.send(new ListObjectsV2Command(listParams));
+    // Delete each object within the folder
+    const deletePromises: any = data.Contents?.map(async (object) => {
+      const deleteParams = {
+        Bucket: process.env.BUCKET_NAME,
+        Key: object.Key,
+      };
+      await s3Client.send(new DeleteObjectCommand(deleteParams));
+      // console.log(`Object deleted successfully: ${object.Key}`);
+    });
 
-    const command = new DeleteObjectCommand(params);
-    const response = await s3Client.send(command);
+    // Wait for all delete operations to complete
+    await Promise.all(deletePromises);
 
-    // console.log(`Successfully deleted ${OBJECT_KEY} from ${BUCKET_NAME}`, response);
-
-    if (response.$metadata.httpStatusCode === 200)
-      return res.status(200).send("Deleted.");
-    return res.sendStatus(response.$metadata.httpStatusCode!);
+    // Delete the folder itself (prefix)
+    const deleteFolderParams: DeleteObjectCommandInput = {
+      Bucket: process.env.BUCKET_NAME,
+      Key: req.body.assignee + "/" + req.params.taskId,
+    };
+    const result = await s3Client.send(
+      new DeleteObjectCommand(deleteFolderParams)
+    );
+    return res.sendStatus(result.$metadata.httpStatusCode!);
+    // console.log(`Folder deleted successfully: ${req.body.assignee + '/' + req.params.taskId}`);
   } catch (error) {
-    // console.error("Error deleting object:", error);
-    return res.status(500).send("Delete operation server error.");
+    // console.error('Error deleting folder:', error);
+    return res.sendStatus(418);
   }
 }
 

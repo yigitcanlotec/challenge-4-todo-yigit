@@ -528,29 +528,32 @@ async function deleteImages(req: Request, res: Response) {
       Prefix: req.params.user + "/" + req.params.taskId,
     };
     const data = await s3Client.send(new ListObjectsV2Command(listParams));
-    // Delete each object within the folder
-    const deletePromises: any = data.Contents?.map(async (object) => {
-      const deleteParams = {
+    if (data.KeyCount) {
+      // Delete each object within the folder
+      const deletePromises: any = data.Contents?.map(async (object) => {
+        const deleteParams = {
+          Bucket: process.env.BUCKET_NAME,
+          Key: object.Key,
+        };
+        await s3Client.send(new DeleteObjectCommand(deleteParams));
+        // console.log(`Object deleted successfully: ${object.Key}`);
+      });
+
+      // Wait for all delete operations to complete
+      await Promise.all(deletePromises);
+
+      // Delete the folder itself (prefix)
+      const deleteFolderParams: DeleteObjectCommandInput = {
         Bucket: process.env.BUCKET_NAME,
-        Key: object.Key,
+        Key: req.body.assignee + "/" + req.params.taskId,
       };
-      await s3Client.send(new DeleteObjectCommand(deleteParams));
-      // console.log(`Object deleted successfully: ${object.Key}`);
-    });
-
-    // Wait for all delete operations to complete
-    await Promise.all(deletePromises);
-
-    // Delete the folder itself (prefix)
-    const deleteFolderParams: DeleteObjectCommandInput = {
-      Bucket: process.env.BUCKET_NAME,
-      Key: req.body.assignee + "/" + req.params.taskId,
-    };
-    const result = await s3Client.send(
-      new DeleteObjectCommand(deleteFolderParams)
-    );
-    return res.sendStatus(result.$metadata.httpStatusCode!);
-    // console.log(`Folder deleted successfully: ${req.body.assignee + '/' + req.params.taskId}`);
+      const result = await s3Client.send(
+        new DeleteObjectCommand(deleteFolderParams)
+      );
+      return res.sendStatus(result.$metadata.httpStatusCode!);
+    }
+    // There is no image.
+    return res.sendStatus(204);
   } catch (error) {
     // console.error('Error deleting folder:', error);
     return res.sendStatus(418);

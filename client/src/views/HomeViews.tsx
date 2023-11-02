@@ -79,23 +79,34 @@ export default function Home() {
     username,
     todo_id: string
   ) => {
-    const result = await axios.delete(
-      serverURL + `/api/v1/${username}/${todo_id}`,
-      {
+    const result = await axios
+      .delete(serverURL + `/api/v1/${username}/${todo_id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
-    );
-    if (result.status === 200) {
-      getTasks(username, token);
+      })
+      .then(async (result) => {
+        try {
+          await axios.delete(
+            serverURL + `/api/v1/${username}/${todo_id}/images`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+        } catch (error) {}
 
-      // getImages(username, token);
-      setMessageBox('Başarıyla silindi!');
-      errorTimeoutRef.current = setTimeout(() => {
-        setMessageBox('');
-      }, 2000);
-    }
+        if (result.status === 200) {
+          getTasks(username, token);
+
+          // getImages(username, token);
+          setMessageBox('Başarıyla silindi!');
+          errorTimeoutRef.current = setTimeout(() => {
+            setMessageBox('');
+          }, 2000);
+        }
+      });
   };
 
   const handleAddTask = async (

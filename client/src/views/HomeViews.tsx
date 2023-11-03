@@ -4,7 +4,7 @@ import './homeViews.css';
 import Task from '../components/task';
 import { ulid } from 'ulid';
 import ServerURLContext from '../contexts/ServerURLContext';
-import Message from '../components/message';
+import Message from '../components/Message';
 
 type Task = {
   todo_id: string;
@@ -14,6 +14,7 @@ type Task = {
 
 export default function Home() {
   const [taskData, setTaskData] = useState<Task[]>([]);
+  const [imagesData, setImagesData] = useState<string[]>();
   const [taskTitle, setTaskTitle] = useState<string>('');
   const [isDone, setDone] = useState<boolean>(false);
   const username = localStorage.getItem('user');
@@ -71,7 +72,7 @@ export default function Home() {
       }, 2000);
     }
     getTasks(username, token);
-    getImages(username, token);
+    // getImages(username, token);
   };
 
   const deleteTask = async (
@@ -137,17 +138,17 @@ export default function Home() {
       const files = inputElement?.files;
 
       if (files) {
-        handleFileChange(files, id, username, token);
+        await handleFileChange(files, id, username, token);
       }
       setDone(false);
       setTaskTitle('');
       getTasks(username, token).then(() => {
+        getImages(username, token);
         setMessageBox(result.statusText);
         errorTimeoutRef.current = setTimeout(() => {
           setMessageBox('');
         }, 2000);
       });
-      getImages(username, token);
     }
   };
 
@@ -207,7 +208,20 @@ export default function Home() {
       .then((result) => {
         return result.data;
       });
-    setTaskData(data);
+    // setTaskData(data);
+    console.log(data);
+    axios
+      .get(serverURL + `/api/v1/${username}/tasks/images`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((result) => {
+        console.log(result.data);
+        const imgID = Object.keys(result.data).map(
+          (element) => element.split('/')[1]
+        );
+      });
   };
 
   const handleFileChange = async (files, taskId, username, token) => {
@@ -267,35 +281,49 @@ export default function Home() {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log(result);
+    // console.log(result);
     if (result.data) {
-      const imgID = Object.keys(result.data).map(
-        (element) => element.split('/').slice(1)[0]
-      );
+      const imgID = Object.keys(result.data).map((element) => {
+        return element.split('/').slice(1);
+      });
 
       imgID.forEach((element, index) => {
-        let todo_id = element;
+        let todo_id = element[0];
+
         if (/[0-9]/.test(todo_id.charAt(0))) {
           todo_id = `#\\3${todo_id.charAt(0)} ${todo_id.slice(1)}`;
         } else {
           todo_id = `#${todo_id}`;
         }
+
         const queryElement = document.querySelector(`${todo_id}`);
+
         const createImgElement = document.createElement('img');
-        createImgElement.id = `img-${todo_id}`;
+        createImgElement.id = `img-${element[1]}`;
         createImgElement.width = 30;
         createImgElement.height = 30;
         createImgElement.src =
           (Object.values(result.data)[index] as string) || '';
-        if (!document.getElementById(`img-${todo_id}`))
+        // queryElement?.appendChild(createImgElement);
+        // console.log(queryElement?.children);
+        for (const child of queryElement?.children || []) {
+          // console.log(child.id);
+          if (document.getElementById(child.id)) continue;
           queryElement?.appendChild(createImgElement);
+          // console.log(element[1], ':', child.id);
+          // Make sure the element has an id before adding it to the array
+        }
       });
     }
   };
 
   useEffect(() => {
     getTasks(username, token);
-    getImages(username, token);
+    // console.log('Console images:', imagesData);
+
+    // getImages(username, token);
+
+    // getImages(username, token);
   }, []);
 
   return (
@@ -339,6 +367,7 @@ export default function Home() {
                       token
                     )
                   }
+                  handleImage={imagesData}
                 />
               ))}
           </div>

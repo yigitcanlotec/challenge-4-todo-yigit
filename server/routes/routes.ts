@@ -476,10 +476,13 @@ async function getImages(req: Request, res: Response) {
     Promise.all(promises)
       .then((results) => {
         const fileLinkArray: string[] = results;
-        const mapping: Record<string, any> = {};
+        type KeyValuePair = { todo_id: string; value: any };
+        const mapping: KeyValuePair[] = [];
 
         files.forEach((key, index) => {
-          mapping[key] = fileLinkArray[index];
+          // console.log(key);
+          const splittedKey = key.split("/")[1];
+          mapping.push({ todo_id: splittedKey, value: fileLinkArray[index] });
         });
         res.status(200).send(mapping);
       })

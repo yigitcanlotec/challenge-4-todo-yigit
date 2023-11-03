@@ -2,8 +2,36 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import './loginViews.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import Message from '../components/message';
+import Message from '../components/Message';
 import ServerURLContext from '../contexts/ServerURLContext';
+
+function unicodeToBase64(str: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    // First, encode the string as UTF-8
+    const utf8Encoder = new TextEncoder();
+    const encoded = utf8Encoder.encode(str);
+
+    // Convert the Uint8Array to a Blob
+    const blob = new Blob([encoded], { type: 'application/octet-stream' });
+
+    // Use FileReader to read the blob as a Base64 encoded string
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      // Make sure reader.result is a string before trying to replace
+      const result = reader.result;
+      if (typeof result === 'string') {
+        // Extract the Base64 encoded string, and remove the Data URL prefix.
+        const base64String = result.replace(/^data:.+;base64,/, '');
+        resolve(base64String);
+      } else {
+        reject(new Error('Reader did not return a string.'));
+      }
+    };
+    reader.onerror = () => reject(reader.error);
+
+    reader.readAsDataURL(blob);
+  });
+}
 
 function LoginPage() {
   const [username, setUsername] = useState('');
@@ -23,8 +51,8 @@ function LoginPage() {
 
   const sendLoginRequest = () => {
     // Base64 encode the username and password
-    const base64Credentials = btoa(username + ':' + password);
-
+    // const base64Credentials = btoa(username + ':' + password);
+    const base64Credentials = unicodeToBase64(username + ':' + password);
     axios
       .get(serverURL + '/api/v1/login', {
         headers: {

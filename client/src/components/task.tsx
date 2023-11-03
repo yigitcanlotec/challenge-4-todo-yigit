@@ -1,6 +1,8 @@
 import React, { MouseEventHandler, useContext } from 'react';
 import ServerURLContext from '../contexts/ServerURLContext';
 import axios from 'axios';
+import TaskImage from './TaskImage';
+
 export default function Task({
   taskId,
   titleText,
@@ -8,6 +10,7 @@ export default function Task({
   handleMarkClick,
   handleDelete,
   handleEdit,
+  handleImage,
 }) {
   const serverURL = useContext(ServerURLContext);
   const username = localStorage.getItem('user');
@@ -26,6 +29,7 @@ export default function Task({
           edit
         </span>
       </div>
+      {handleImage}
     </div>
   );
 }

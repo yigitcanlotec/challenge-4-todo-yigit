@@ -76,7 +76,7 @@ router.delete("/api/v1/:user/:taskId/images", deleteImages);
 //-------------------------------------
 // For invalid path, return response 418.
 app.use((req, res) => {
-  res.status(418).send("Invalid Path.");
+  res.status(418);
 });
 
 app.listen(process.env.PORT || 3000, () => {

@@ -5,6 +5,7 @@ import Task from '../components/Task';
 import { ulid } from 'ulid';
 import ServerURLContext from '../contexts/ServerURLContext';
 import Message from '../components/Message';
+import { useNavigate } from 'react-router-dom';
 
 type Task = {
   todo_id: string;
@@ -23,6 +24,7 @@ export default function Home() {
   const serverURL = useContext(ServerURLContext);
   const errorTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [messageBox, setMessageBox] = useState('');
+  const navigate = useNavigate();
 
   const handleTaskChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTaskTitle(event.target.value);
@@ -293,7 +295,9 @@ export default function Home() {
   return (
     <>
       <div className='top-container'>
-        <button id='profile'>{username}</button>
+        <button id='profile' onClick={() => navigate('/profile')}>
+          {username}
+        </button>
         <button id={'logout'}>Log out</button>
       </div>
       <div className='home-container'>

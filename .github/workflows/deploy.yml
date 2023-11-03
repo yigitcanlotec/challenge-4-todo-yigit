@@ -35,13 +35,3 @@ jobs:
           cd server
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:server -f dockerfile .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:server
-
-      - name: Build, tag, and push client image to Amazon ECR
-        working-directory: client
-        env:
-          ECR_REGISTRY2: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY_CLIENT: ${{ secrets.ECR_REPOSITORY_CLIENT }}
-          IMAGE_TAG2: ${{ github.sha }}
-        run: |
-          docker build -f dockerfile -t "$ECR_REGISTRY2/$ECR_REPOSITORY_CLIENT:client" .
-          docker push $ECR_REGISTRY2/$ECR_REPOSITORY_CLIENT:client

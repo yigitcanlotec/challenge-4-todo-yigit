@@ -49,10 +49,9 @@ function LoginPage() {
     setPassword(event.target.value);
   };
 
-  const sendLoginRequest = () => {
+  const sendLoginRequest = async () => {
     // Base64 encode the username and password
-    // const base64Credentials = btoa(username + ':' + password);
-    const base64Credentials = unicodeToBase64(username + ':' + password);
+    const base64Credentials = await unicodeToBase64(username + ':' + password);
     axios
       .get(serverURL + '/api/v1/login', {
         headers: {

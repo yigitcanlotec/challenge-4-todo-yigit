@@ -10,6 +10,7 @@ type Task = {
   todo_id: string;
   title: string;
   isDone: Boolean;
+  imageLinks: any;
 };
 
 export default function Home() {
@@ -72,7 +73,6 @@ export default function Home() {
       }, 2000);
     }
     getTasks(username, token);
-    // getImages(username, token);
   };
 
   const deleteTask = async (
@@ -100,8 +100,6 @@ export default function Home() {
 
         if (result.status === 200) {
           getTasks(username, token);
-
-          // getImages(username, token);
           setMessageBox('Başarıyla silindi!');
           errorTimeoutRef.current = setTimeout(() => {
             setMessageBox('');
@@ -143,7 +141,6 @@ export default function Home() {
       setDone(false);
       setTaskTitle('');
       getTasks(username, token).then(() => {
-        getImages(username, token);
         setMessageBox(result.statusText);
         errorTimeoutRef.current = setTimeout(() => {
           setMessageBox('');
@@ -199,7 +196,7 @@ export default function Home() {
   };
 
   const getTasks = async (username, token) => {
-    const data = await axios
+    const taskList: Array<any> = await axios
       .get(serverURL + `/api/v1/${username}/tasks`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -208,8 +205,7 @@ export default function Home() {
       .then((result) => {
         return result.data;
       });
-    // setTaskData(data);
-    console.log(data);
+
     axios
       .get(serverURL + `/api/v1/${username}/tasks/images`, {
         headers: {
@@ -217,10 +213,25 @@ export default function Home() {
         },
       })
       .then((result) => {
-        console.log(result.data);
-        const imgID = Object.keys(result.data).map(
-          (element) => element.split('/')[1]
-        );
+        const imageList = result.data;
+
+        imageList.map((imageList) => imageList.todo_id);
+        // setImagesData(imageList);
+
+        let combinedArray = taskList.map((item) => {
+          // Filter array2 to find elements with the same todo_id as the current item
+          let valuesForTodo = imageList
+            .filter((obj) => obj.todo_id === item.todo_id)
+            .map((obj) => obj.value); // map to extract the value
+
+          // Return a new object merging the item from array1 with the values found
+          return {
+            ...item, // spread the properties from the original item
+            imageLinks: valuesForTodo, // add the values array
+          };
+        });
+
+        setTaskData(combinedArray);
       });
   };
 
@@ -275,55 +286,8 @@ export default function Home() {
     }
   };
 
-  const getImages = async (user, token) => {
-    const result = await axios.get(serverURL + `/api/v1/${user}/tasks/images`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    // console.log(result);
-    if (result.data) {
-      const imgID = Object.keys(result.data).map((element) => {
-        return element.split('/').slice(1);
-      });
-
-      imgID.forEach((element, index) => {
-        let todo_id = element[0];
-
-        if (/[0-9]/.test(todo_id.charAt(0))) {
-          todo_id = `#\\3${todo_id.charAt(0)} ${todo_id.slice(1)}`;
-        } else {
-          todo_id = `#${todo_id}`;
-        }
-
-        const queryElement = document.querySelector(`${todo_id}`);
-
-        const createImgElement = document.createElement('img');
-        createImgElement.id = `img-${element[1]}`;
-        createImgElement.width = 30;
-        createImgElement.height = 30;
-        createImgElement.src =
-          (Object.values(result.data)[index] as string) || '';
-        // queryElement?.appendChild(createImgElement);
-        // console.log(queryElement?.children);
-        for (const child of queryElement?.children || []) {
-          // console.log(child.id);
-          if (document.getElementById(child.id)) continue;
-          queryElement?.appendChild(createImgElement);
-          // console.log(element[1], ':', child.id);
-          // Make sure the element has an id before adding it to the array
-        }
-      });
-    }
-  };
-
   useEffect(() => {
     getTasks(username, token);
-    // console.log('Console images:', imagesData);
-
-    // getImages(username, token);
-
-    // getImages(username, token);
   }, []);
 
   return (
@@ -367,7 +331,7 @@ export default function Home() {
                       token
                     )
                   }
-                  handleImage={imagesData}
+                  handleImage={task.imageLinks}
                 />
               ))}
           </div>

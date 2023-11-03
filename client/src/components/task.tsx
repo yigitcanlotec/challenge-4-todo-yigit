@@ -12,9 +12,7 @@ export default function Task({
   handleEdit,
   handleImage,
 }) {
-  const serverURL = useContext(ServerURLContext);
-  const username = localStorage.getItem('user');
-  const token = localStorage.getItem('token');
+  const imageList: Array<any> = handleImage;
 
   return (
     <div id={taskId} className={isDone ? 'true' : ''} key={taskId}>
@@ -29,7 +27,10 @@ export default function Task({
           edit
         </span>
       </div>
-      {handleImage}
+      {imageList.length !== 0 &&
+        imageList.map((link, index) => (
+          <TaskImage key={index} imageProp={link} />
+        ))}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import React, { MouseEventHandler, useContext } from 'react';
 
-export default function TaskImage(imageProp) {
-  return <img src={imageProp} alt='Description' />;
+export default function TaskImage(obj) {
+  return <img src={obj.imageProp} alt='Description' />;
 }

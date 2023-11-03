@@ -117,7 +117,7 @@ async function login(req: Request, res: Response, next: NextFunction) {
     logger(req, res, function (error) {
       if (error) return error.message;
     });
-    return res.sendStatus(500);
+    return res.status(500).send("DynamoDB error");
   }
 
   // If user and results not exists, return 404.

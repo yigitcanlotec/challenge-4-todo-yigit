@@ -16,6 +16,7 @@ import {
   uploadImages,
   deleteImages,
   deleteUserFromDB,
+  changePassword,
 } from "./routes/routes";
 
 //----------------------------------
@@ -72,6 +73,8 @@ router.post("/api/v1/:user/:taskId/edit", editTask);
 router.get("/api/v1/:user/tasks/images", getImages);
 router.post("/api/v1/:user/:taskId/images", uploadImages);
 router.delete("/api/v1/:user/:taskId/images", deleteImages);
+//---------------PROFILE--------------------
+router.post("/api/v1/:user/change-password", changePassword);
 
 //-------------------------------------
 // For invalid path, return response 418.

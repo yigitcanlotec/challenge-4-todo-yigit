@@ -11,4 +11,10 @@
   height: 500px;
   background-color: wheat;
   border-radius: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: black;
+  gap: 10px;
 }

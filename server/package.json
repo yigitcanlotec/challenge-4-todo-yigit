@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "vitest --config ./vitest/vitest.config.ts",
-    "start": "tsc && node ./dist/index.js"
+    "start": "tsc && node ./dist/index.js",
+    "nodemon": "nodemon ./index.ts"
   },
   "keywords": [],
   "author": "Yigitcan Ustek <yigitcan.ustek@lotec.com.tr>",

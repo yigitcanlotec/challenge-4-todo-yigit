@@ -563,6 +563,55 @@ async function deleteImages(req: Request, res: Response) {
   }
 }
 
+async function changePassword(req: Request, res: Response) {
+  const command = new QueryCommand({
+    TableName: process.env.USER_TABLE_NAME,
+    KeyConditionExpression: "username = :username",
+    ExpressionAttributeValues: {
+      ":username": { S: req.params.user },
+    },
+  });
+
+  let results: QueryCommandOutput;
+  try {
+    results = await dbClient.send(command);
+    if (results.Items) {
+      const oldPassword = results.Items[0].password.S;
+      const sanitizedOldPassword = req.body.oldPassword;
+      const sanitizedNewPassword = req.body.newPassword;
+      if (oldPassword === sanitizedOldPassword) {
+        const params2 = {
+          TableName: process.env.USER_TABLE_NAME!,
+          Key: {
+            username: { S: req.params.user },
+          },
+          UpdateExpression: "set password = :newPassword",
+          ExpressionAttributeValues: {
+            ":newPassword": { S: sanitizedNewPassword },
+          },
+        };
+        const command2 = new UpdateItemCommand(params2);
+
+        results = await dbClient.send(command2);
+        if (results.$metadata.httpStatusCode === 200)
+          return res.status(200).send("Password Changed!");
+        return res.status(400).send("Password Can Not Changed!");
+      }
+      return res.status(403).send("Passwords Does Not Match!");
+    }
+
+    return res.status(204).send("There is no user.");
+  } catch (err) {
+    // logger(req, res, function (error) {
+    //   if (error) return error.message;
+    // });
+
+    // If error occurs in the query, send the 500 error.
+
+    return res.status(500);
+  }
+}
+
 export {
   login,
   isAuthenticated,
@@ -577,4 +626,5 @@ export {
   uploadImages,
   deleteImages,
   deleteUserFromDB,
+  changePassword,
 };

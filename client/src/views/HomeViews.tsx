@@ -208,6 +208,7 @@ export default function Home() {
         return result.data;
       });
 
+    setTaskData(taskList);
     axios
       .get(serverURL + `/api/v1/${username}/tasks/images`, {
         headers: {
@@ -215,25 +216,27 @@ export default function Home() {
         },
       })
       .then((result) => {
-        const imageList = result.data;
+        if (result.data) {
+          const imageList = result.data;
 
-        imageList.map((imageList) => imageList.todo_id);
-        // setImagesData(imageList);
+          imageList.map((imageList) => imageList.todo_id);
+          // setImagesData(imageList);
 
-        let combinedArray = taskList.map((item) => {
-          // Filter array2 to find elements with the same todo_id as the current item
-          let valuesForTodo = imageList
-            .filter((obj) => obj.todo_id === item.todo_id)
-            .map((obj) => obj.value); // map to extract the value
+          let combinedArray = taskList.map((item) => {
+            // Filter array2 to find elements with the same todo_id as the current item
+            let valuesForTodo = imageList
+              .filter((obj) => obj.todo_id === item.todo_id)
+              .map((obj) => obj.value); // map to extract the value
 
-          // Return a new object merging the item from array1 with the values found
-          return {
-            ...item, // spread the properties from the original item
-            imageLinks: valuesForTodo, // add the values array
-          };
-        });
+            // Return a new object merging the item from array1 with the values found
+            return {
+              ...item, // spread the properties from the original item
+              imageLinks: valuesForTodo, // add the values array
+            };
+          });
 
-        setTaskData(combinedArray);
+          setTaskData(combinedArray);
+        }
       });
   };
 
@@ -292,6 +295,10 @@ export default function Home() {
     getTasks(username, token);
   }, []);
 
+  const NoTodos: React.FC = () => {
+    return <h3>No tasks available!</h3>;
+  };
+
   return (
     <>
       <div className='top-container'>
@@ -304,40 +311,42 @@ export default function Home() {
         <h3>Todo List</h3>
         <div className='task-container'>
           <div className='tasks'>
-            {taskData
-              .sort((a, b) =>
-                (b.todo_id as string).localeCompare(a.todo_id as string)
-              )
-              .map((task) => (
-                <Task
-                  key={task.todo_id}
-                  taskId={task.todo_id}
-                  titleText={task.title}
-                  isDone={task.isDone}
-                  handleMarkClick={(e) =>
-                    markAsDoneOrUndone(
-                      e,
-                      task.title,
-                      task.todo_id,
-                      username,
-                      task.isDone,
-                      token
-                    )
-                  }
-                  handleDelete={(e) => deleteTask(e, username, task.todo_id)}
-                  handleEdit={(e) =>
-                    editTask(
-                      e,
-                      username,
-                      task.todo_id,
-                      task.title,
-                      task.isDone,
-                      token
-                    )
-                  }
-                  handleImage={task.imageLinks}
-                />
-              ))}
+            {!taskData.length && <NoTodos />}
+            {taskData &&
+              taskData
+                .sort((a, b) =>
+                  (b.todo_id as string).localeCompare(a.todo_id as string)
+                )
+                .map((task) => (
+                  <Task
+                    key={task.todo_id}
+                    taskId={task.todo_id}
+                    titleText={task.title}
+                    isDone={task.isDone}
+                    handleMarkClick={(e) =>
+                      markAsDoneOrUndone(
+                        e,
+                        task.title,
+                        task.todo_id,
+                        username,
+                        task.isDone,
+                        token
+                      )
+                    }
+                    handleDelete={(e) => deleteTask(e, username, task.todo_id)}
+                    handleEdit={(e) =>
+                      editTask(
+                        e,
+                        username,
+                        task.todo_id,
+                        task.title,
+                        task.isDone,
+                        token
+                      )
+                    }
+                    handleImage={task.imageLinks || []}
+                  />
+                ))}
           </div>
           <div className='add-task-container'>
             <input

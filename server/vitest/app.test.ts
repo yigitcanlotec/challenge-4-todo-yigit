@@ -7,6 +7,7 @@ import {
   vitest,
   beforeAll,
   afterAll,
+  beforeEach,
 } from "vitest";
 import express, { Request, Response, NextFunction } from "express";
 import axios, { AxiosResponse } from "axios";
@@ -14,7 +15,6 @@ import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
 import { ulid } from "ulid";
-import { beforeEach } from "node:test";
 dotenv.config();
 
 const username = "vitest";
@@ -114,6 +114,36 @@ describe("Register API", () => {
       .catch((err) => {
         expect(err.response.status).toBe(400);
       });
+  });
+
+  test("Change Password", async () => {
+    try {
+      const base64Credentials = Buffer.from(`test_user:test_password`).toString(
+        "base64"
+      );
+      const token = await axios.get(process.env.SERVER_URL + "/api/v1/login", {
+        headers: {
+          Authorization: `Basic ${base64Credentials}`,
+        },
+      });
+
+      axios
+        .post(
+          process.env.SERVER_URL + "/api/v1/test_user/change-password",
+          {
+            oldPassword: "test_password",
+            newPassword: "test_password2",
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((res) => {
+          expect(res.status).toBe(200);
+        });
+    } catch (error) {}
   });
 });
 

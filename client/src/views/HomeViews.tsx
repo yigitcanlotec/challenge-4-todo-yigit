@@ -291,9 +291,18 @@ export default function Home() {
     }
   };
 
+  const logOut = () => {
+    localStorage.clear();
+    navigate('/');
+  };
+
   useEffect(() => {
-    getTasks(username, token);
-  }, []);
+    if (!token) {
+      navigate('/');
+    } else {
+      getTasks(username, token);
+    }
+  }, [navigate]);
 
   const NoTodos: React.FC = () => {
     return <h3>No tasks available!</h3>;
@@ -305,7 +314,9 @@ export default function Home() {
         <button id='profile' onClick={() => navigate('/profile')}>
           {username}
         </button>
-        <button id={'logout'}>Log out</button>
+        <button id={'logout'} onClick={() => logOut()}>
+          Log out
+        </button>
       </div>
       <div className='home-container'>
         <h3>Todo List</h3>

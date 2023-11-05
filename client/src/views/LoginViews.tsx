@@ -49,6 +49,10 @@ function LoginPage() {
     setPassword(event.target.value);
   };
 
+  const goBack = () => {
+    navigate(-1);
+  };
+
   const sendLoginRequest = async () => {
     // Base64 encode the username and password
     const base64Credentials = await unicodeToBase64(username + ':' + password);
@@ -95,42 +99,47 @@ function LoginPage() {
   };
 
   return (
-    <div className='login-container'>
-      <div className='login-container-left'>
-        <div className='container-1'>
-          <div className='container-1-left'>left</div>
+    <>
+      <span className='material-symbols-outlined' onClick={goBack}>
+        arrow_back
+      </span>
+      <div className='login-container'>
+        <div className='login-container-left'>
+          <div className='container-1'>
+            <div className='container-1-left'>left</div>
+          </div>
         </div>
-      </div>
-      <div className='login-container-right'>
-        <div className='container-2'>
-          <div className='elements-container'>
-            <h3>Log In</h3>
-            <label htmlFor='text-input'>Kullanıcı Adı</label>
-            <input
-              type='text'
-              id='text-input'
-              value={username}
-              onChange={inputUsername}
-            />
-            <label htmlFor='password-input'>Password</label>
-            <input
-              type='password'
-              id='password-input'
-              onChange={inputPassword}
-            />
-            <div className='button-container'>
+        <div className='login-container-right'>
+          <div className='container-2'>
+            <div className='elements-container'>
+              <h3>Log In</h3>
+              <label htmlFor='text-input'>Kullanıcı Adı</label>
               <input
-                type='button'
-                id='login-button'
-                value='Log In'
-                onClick={sendLoginRequest}
+                type='text'
+                id='text-input'
+                value={username}
+                onChange={inputUsername}
               />
+              <label htmlFor='password-input'>Password</label>
+              <input
+                type='password'
+                id='password-input'
+                onChange={inputPassword}
+              />
+              <div className='button-container'>
+                <input
+                  type='button'
+                  id='login-button'
+                  value='Log In'
+                  onClick={sendLoginRequest}
+                />
+              </div>
+              {messageBox && <Message errorMessage={messageBox} />}
             </div>
-            {messageBox && <Message errorMessage={messageBox} />}
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

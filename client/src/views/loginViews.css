@@ -1,3 +1,11 @@
+.material-symbols-outlined {
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #242424;
+  font-size: 36px;
+}
+
 .login-container {
   margin: 0;
   height: 100vh;

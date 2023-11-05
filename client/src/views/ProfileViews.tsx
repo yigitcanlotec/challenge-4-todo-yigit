@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { useState } from 'react';
 import './profileViews.css';
 import ServerURLContext from '../contexts/ServerURLContext';
@@ -73,10 +73,18 @@ export default function Profile() {
     navigate(-1);
   };
 
+  useEffect(() => {
+    if (!token) {
+      navigate('/');
+    }
+  }, [navigate]);
+
   return (
     <>
       <div className='back'>
-        <button onClick={goBack}>Back</button>
+        <span className='material-symbols-outlined' onClick={goBack}>
+          arrow_back
+        </span>
       </div>
       <div className='container'>
         <div className='profile-container'>

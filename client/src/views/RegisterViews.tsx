@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import './registerViews.css';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-
+  const navigate = useNavigate();
   const inputUsername = (event) => {
     setUsername(event.target.value);
   };
@@ -30,43 +31,54 @@ function LoginPage() {
       });
   };
 
+  const goBack = () => {
+    navigate(-1);
+  };
+
   return (
-    <div className='register-container'>
-      <div className='register-container-left'>
-        <div className='container-1'>
-          <div className='container-1-left'>left</div>
-        </div>
+    <>
+      <div className='back'>
+        <span className='material-symbols-outlined' onClick={goBack}>
+          arrow_back
+        </span>
       </div>
-      <div className='register-container-right'>
-        <div className='container-2'>
-          <div className='elements-container'>
-            <h3>Register</h3>
-            <label htmlFor='text-input'>Kullanıcı Adı</label>
-            <input
-              type='text'
-              id='text-input'
-              value={username}
-              onChange={inputUsername}
-            />
-            <label htmlFor='password-input'>Password</label>
-            <input
-              type='password'
-              id='password-input'
-              value={password}
-              onChange={inputPassword}
-            />
-            <div className='button-container'>
+      <div className='register-container'>
+        <div className='register-container-left'>
+          <div className='container-1'>
+            <div className='container-1-left'>left</div>
+          </div>
+        </div>
+        <div className='register-container-right'>
+          <div className='container-2'>
+            <div className='elements-container'>
+              <h3>Register</h3>
+              <label htmlFor='text-input'>Kullanıcı Adı</label>
               <input
-                type='button'
-                id='register-button'
-                value='Register'
-                onClick={sendRegisterRequest}
+                type='text'
+                id='text-input'
+                value={username}
+                onChange={inputUsername}
               />
+              <label htmlFor='password-input'>Password</label>
+              <input
+                type='password'
+                id='password-input'
+                value={password}
+                onChange={inputPassword}
+              />
+              <div className='button-container'>
+                <input
+                  type='button'
+                  id='register-button'
+                  value='Register'
+                  onClick={sendRegisterRequest}
+                />
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

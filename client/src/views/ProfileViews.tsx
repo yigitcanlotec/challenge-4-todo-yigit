@@ -3,8 +3,17 @@ import { useState } from 'react';
 import './profileViews.css';
 import ServerURLContext from '../contexts/ServerURLContext';
 import axios from 'axios';
-import Message from '../components/Message';
+// import Message from '../components/Message';
+
 import { useNavigate } from 'react-router-dom';
+
+function Message({ errorMessage }) {
+  return (
+    <div className='message-container'>
+      <p>{errorMessage}</p>
+    </div>
+  );
+}
 
 export default function Profile() {
   const username = localStorage.getItem('user');

@@ -18,3 +18,13 @@
   color: black;
   gap: 10px;
 }
+
+.message-container {
+  /* height: 350px; */
+  width: 350px;
+  background-color: wheat;
+  text-align: center;
+  border: 1px solid;
+  margin-top: 25px;
+  color: black;
+}

@@ -49,8 +49,6 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:server -f dockerfile .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:server
 
-      - name: Build Client
-
       - name: Upload client files to S3
         uses: aws-actions/amazon-s3-sync@v1
         with:

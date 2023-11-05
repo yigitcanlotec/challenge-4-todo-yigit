@@ -27,8 +27,8 @@ jobs:
 
       - name: Build the Project with Vite
         run: |
+          cd client
           npm run build
-          cd ..
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1

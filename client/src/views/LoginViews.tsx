@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import './loginViews.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import Message from '../components/Message';
+// import Message from '../components/Message';
 import ServerURLContext from '../contexts/ServerURLContext';
 
 function unicodeToBase64(str: string): Promise<string> {
@@ -31,6 +31,13 @@ function unicodeToBase64(str: string): Promise<string> {
 
     reader.readAsDataURL(blob);
   });
+}
+function Message({ errorMessage }) {
+  return (
+    <div className='message-container'>
+      <p>{errorMessage}</p>
+    </div>
+  );
 }
 
 function LoginPage() {

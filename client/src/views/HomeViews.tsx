@@ -5,7 +5,7 @@ import Task from '../components/task';
 import { ulid } from 'ulid';
 import ServerURLContext from '../contexts/ServerURLContext';
 
-import Message from '../components/Message';
+import Message from '../components/Message.tsx';
 import { useNavigate } from 'react-router-dom';
 
 type Task = {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext, useRef } from 'react';
 import axios, { AxiosResponse } from 'axios';
 import './homeViews.css';
-import Task from '../components/Task';
+import Task from '../components/task';
 import { ulid } from 'ulid';
 import ServerURLContext from '../contexts/ServerURLContext';
 

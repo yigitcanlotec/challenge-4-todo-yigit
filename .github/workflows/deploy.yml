@@ -21,13 +21,14 @@ jobs:
           node-version: "20"
 
       - name: Install Dependencies
-        run: npm install
+        run: |
+          cd client
+          npm install
+          cd ..
 
       - name: Build the Project with Vite
         run: |
-          cd client
           npm run build
-          cd ..
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1

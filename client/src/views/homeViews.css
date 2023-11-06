@@ -128,3 +128,10 @@ p {
   margin-bottom: 5px;
   margin-left: 10px;
 }
+
+.task-edit-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}

@@ -8,49 +8,6 @@ import { useNavigate } from 'react-router-dom';
 import Task from '../components/TodoTask';
 import Message from '../components/MessageBox';
 
-// function Message({ errorMessage }) {
-//   return (
-//     <div className='message-container'>
-//       <p>{errorMessage}</p>
-//     </div>
-//   );
-// }
-
-// function TaskImage(obj) {
-//   return <img src={obj.imageProp} alt='Description' />;
-// }
-
-// function Task({
-//   taskId,
-//   titleText,
-//   isDone,
-//   handleMarkClick,
-//   handleDelete,
-//   handleImage,
-// }) {
-//   const imageList: Array<any> = handleImage;
-
-//   return (
-//     <div id={taskId} className={isDone ? 'true' : ''} key={taskId}>
-//       <div className='task-input-container'>
-//         <p className='input-title' onClick={handleMarkClick}>
-//           {titleText}
-//         </p>
-//         <span className='material-symbols-rounded' onClick={handleDelete}>
-//           delete
-//         </span>
-//         <span className='material-symbols-rounded' onClick={() => {}}>
-//           edit
-//         </span>
-//       </div>
-//       {imageList.length !== 0 &&
-//         imageList.map((link, index) => (
-//           <TaskImage key={index} imageProp={link} />
-//         ))}
-//     </div>
-//   );
-// }
-
 type Task = {
   todo_id: string;
   title: string;
@@ -63,7 +20,7 @@ export default function Home() {
   const [imagesData, setImagesData] = useState<string[]>();
   const [taskTitle, setTaskTitle] = useState<string>('');
   const [isDone, setDone] = useState<boolean>(false);
-  const [isEdit, setEdit] = useState<boolean>(false);
+  const [editMode, setEdit] = useState<boolean>(false);
   const username = localStorage.getItem('user');
   const token = localStorage.getItem('token');
   const serverURL = useContext(ServerURLContext);
@@ -193,52 +150,6 @@ export default function Home() {
           setMessageBox('');
         }, 2000);
       });
-    }
-  };
-
-  const editTask = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-    username,
-    taskId,
-    title: string,
-    isDone: Boolean,
-    token
-  ) => {
-    const element = document.getElementById(taskId);
-
-    if (element) {
-      const newInput = document.createElement('input');
-      newInput.className = `input-title`;
-      newInput.style.marginLeft = '210px';
-      newInput.style.marginTop = '20px';
-      newInput.type = 'text';
-      newInput.value = title!;
-      while (element.firstChild) {
-        element.removeChild(element.firstChild);
-      }
-      element.appendChild(newInput);
-      const spanElement = document.createElement('span');
-      spanElement.className = 'material-symbols-outlined';
-      spanElement.innerText = 'done';
-      spanElement.style.marginLeft = '25px';
-      spanElement.onclick = async () => {
-        const result = await axios.post(
-          serverURL + `/api/v1/${username}/${taskId}/edit`,
-          {
-            title: newInput.value,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        if (result.status === 200) {
-          window.location.reload();
-        }
-      };
-
-      element.appendChild(spanElement);
     }
   };
 
@@ -390,16 +301,8 @@ export default function Home() {
                       )
                     }
                     handleDelete={(e) => deleteTask(e, username, task.todo_id)}
-                    handleEdit={(e) =>
-                      editTask(
-                        e,
-                        username,
-                        task.todo_id,
-                        task.title,
-                        task.isDone,
-                        token
-                      )
-                    }
+                    onUpdate={editMode}
+                    getTasks={getTasks}
                     handleImage={task.imageLinks || []}
                   />
                 ))}

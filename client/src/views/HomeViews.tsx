@@ -1,56 +1,55 @@
 import React, { useEffect, useState, useContext, useRef } from 'react';
 import axios, { AxiosResponse } from 'axios';
 import './homeViews.css';
-// import Task from '../components/task';
+import Task from '../components/Task';
 import { ulid } from 'ulid';
 import ServerURLContext from '../contexts/ServerURLContext';
 
-// import Message from '../components/Message.tsx';
+import Message from '../components/Message';
 import { useNavigate } from 'react-router-dom';
 
-function Message({ errorMessage }) {
-  return (
-    <div className='message-container'>
-      <p>{errorMessage}</p>
-    </div>
-  );
-}
+// function Message({ errorMessage }) {
+//   return (
+//     <div className='message-container'>
+//       <p>{errorMessage}</p>
+//     </div>
+//   );
+// }
 
-function TaskImage(obj) {
-  return <img src={obj.imageProp} alt='Description' />;
-}
+// function TaskImage(obj) {
+//   return <img src={obj.imageProp} alt='Description' />;
+// }
 
-function Task({
-  taskId,
-  titleText,
-  isDone,
-  handleMarkClick,
-  handleDelete,
-  handleEdit,
-  handleImage,
-}) {
-  const imageList: Array<any> = handleImage;
+// function Task({
+//   taskId,
+//   titleText,
+//   isDone,
+//   handleMarkClick,
+//   handleDelete,
+//   handleImage,
+// }) {
+//   const imageList: Array<any> = handleImage;
 
-  return (
-    <div id={taskId} className={isDone ? 'true' : ''} key={taskId}>
-      <div className='task-input-container'>
-        <p className='input-title' onClick={handleMarkClick}>
-          {titleText}
-        </p>
-        <span className='material-symbols-rounded' onClick={handleDelete}>
-          delete
-        </span>
-        <span className='material-symbols-rounded' onClick={handleEdit}>
-          edit
-        </span>
-      </div>
-      {imageList.length !== 0 &&
-        imageList.map((link, index) => (
-          <TaskImage key={index} imageProp={link} />
-        ))}
-    </div>
-  );
-}
+//   return (
+//     <div id={taskId} className={isDone ? 'true' : ''} key={taskId}>
+//       <div className='task-input-container'>
+//         <p className='input-title' onClick={handleMarkClick}>
+//           {titleText}
+//         </p>
+//         <span className='material-symbols-rounded' onClick={handleDelete}>
+//           delete
+//         </span>
+//         <span className='material-symbols-rounded' onClick={() => {}}>
+//           edit
+//         </span>
+//       </div>
+//       {imageList.length !== 0 &&
+//         imageList.map((link, index) => (
+//           <TaskImage key={index} imageProp={link} />
+//         ))}
+//     </div>
+//   );
+// }
 
 type Task = {
   todo_id: string;
@@ -64,6 +63,7 @@ export default function Home() {
   const [imagesData, setImagesData] = useState<string[]>();
   const [taskTitle, setTaskTitle] = useState<string>('');
   const [isDone, setDone] = useState<boolean>(false);
+  const [isEdit, setEdit] = useState<boolean>(false);
   const username = localStorage.getItem('user');
   const token = localStorage.getItem('token');
   const serverURL = useContext(ServerURLContext);

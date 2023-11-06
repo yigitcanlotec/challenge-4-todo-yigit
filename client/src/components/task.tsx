@@ -1,9 +1,7 @@
 import React, { MouseEventHandler, useContext } from 'react';
-import ServerURLContext from '../contexts/ServerURLContext';
-import axios from 'axios';
 import TaskImage from './TaskImage';
 
-export default function Task({
+function Task({
   taskId,
   titleText,
   isDone,
@@ -34,3 +32,5 @@ export default function Task({
     </div>
   );
 }
+
+export default Task;

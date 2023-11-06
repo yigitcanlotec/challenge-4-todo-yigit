@@ -5,7 +5,7 @@ import { ulid } from 'ulid';
 import ServerURLContext from '../contexts/ServerURLContext';
 import { useNavigate } from 'react-router-dom';
 
-import Task from '../components/Task';
+import Task from '../components/TodoTask';
 import Message from '../components/MessageBox';
 
 // function Message({ errorMessage }) {

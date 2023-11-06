@@ -10,7 +10,7 @@ import Profile from './views/ProfileViews';
 function App() {
   return (
     <Router>
-      <serverURL.Provider value='http://localhost:3000'>
+      <serverURL.Provider value='https://784x2hp83m.eu-west-1.awsapprunner.com'>
         <Routes>
           <Route path='/' element={<WelcomeViews />} />
           <Route path='/login' element={<LoginViews />} />

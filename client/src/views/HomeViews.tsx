@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useContext, useRef } from 'react';
 import axios, { AxiosResponse } from 'axios';
 import './homeViews.css';
-import Task from '../components/Task';
 import { ulid } from 'ulid';
 import ServerURLContext from '../contexts/ServerURLContext';
-
-import Message from '../components/Message';
 import { useNavigate } from 'react-router-dom';
+
+import Task from '../components/Task';
+import Message from '../components/Message';
 
 // function Message({ errorMessage }) {
 //   return (

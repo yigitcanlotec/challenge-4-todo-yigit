@@ -1,10 +1,16 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-// @ts-ignore
-import { resolve } from 'path';
+import resolve from '@rollup/plugin-node-resolve';
+
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    resolve({
+      extensions: ['.mjs', '.js', '.json', '.node', '.jsx', '.tsx'], // Add .jsx here if needed
+    }),
+  ],
+
   build: {
     outDir: 'dist',
   },

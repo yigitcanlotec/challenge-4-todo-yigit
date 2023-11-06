@@ -107,7 +107,11 @@ function LoginPage() {
 
   return (
     <>
-      <span className='material-symbols-outlined' onClick={goBack}>
+      <span
+        id='material-symbols-outlined'
+        className='material-symbols-outlined'
+        onClick={goBack}
+      >
         arrow_back
       </span>
       <div className='login-container'>

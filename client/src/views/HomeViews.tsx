@@ -6,7 +6,7 @@ import ServerURLContext from '../contexts/ServerURLContext';
 import { useNavigate } from 'react-router-dom';
 
 import Task from '../components/Task';
-import Message from '../components/Message';
+import Message from '../components/MessageBox';
 
 // function Message({ errorMessage }) {
 //   return (

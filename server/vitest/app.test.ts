@@ -3,14 +3,12 @@ import {
   expect,
   test,
   describe,
-  it,
-  vitest,
   beforeAll,
   afterAll,
   beforeEach,
 } from "vitest";
-import express, { Request, Response, NextFunction } from "express";
-import axios, { AxiosResponse } from "axios";
+
+import axios from "axios";
 import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
@@ -136,7 +134,7 @@ describe("Register API", () => {
           },
           {
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${token.data}`,
             },
           }
         )
